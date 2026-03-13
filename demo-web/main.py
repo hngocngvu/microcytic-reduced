@@ -1,14 +1,14 @@
 import streamlit as st 
 import os 
+import sys 
 
 # mentzer= mcv/rbc
 # tsat%= fe*100%/tibc or fe*70.9/transferin
 # stfr/fer_idx= stfr/log(ferritin)
 
-cwd= os.getcwd()
-BASE_DIR= os.path.join(cwd,"..")
-if BASE_DIR not in os.sys.path:
-    os.sys.path.append(BASE_DIR)
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
 
 from src.dataclass.schema import Input, Output, Config
 from src.functions.function import stfr_ferritin_index, cal_mentzer, diendihst, cal_tsat
