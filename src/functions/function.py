@@ -8,15 +8,18 @@ if BASE_DIR not in os.sys.path:
 
 import math
 
+def clean_text(t):
+    return t.lower()
+
 def cal_mentzer(mcv, rbc):
     return mcv/rbc
 
 def stfr_ferritin_index(stfr, ferritin, thres, labels):
-    diagnosis: str 
+    diagnosis: str
     reason: str
     idx= 0
 
-    if ferritin is not None and stfr is not None and ferritin >0 and ferritin !=1: 
+    if ferritin !=0 and stfr is not None and ferritin >0 and ferritin !=1: 
         idx= stfr / math.log10(ferritin)
 
     if idx > thres['stfr_fer_idx'][1]:
@@ -41,23 +44,23 @@ def cal_mentzer(mcv, rbc):
 
 
 def diendihst(data, thres, labels):
-    diagnosis = None
-    reason = None
+    diagnosis = ""
+    reason = ""
 
     if data.dotbiengen:
-        if data.hbbart is not None and data.hbbart > thres["hbbart"]: 
+        if data.hbbart !=0 and data.hbbart > thres["hbbart"]: 
             diagnosis = labels[5]
             reason= ""
 
 
-        if data.hba2 is not None and data.hba2 > thres["hba2"]:
+        if data.hba2 !=0 and data.hba2 > thres["hba2"]:
             diagnosis = labels[6]
             reason= ""
 
 
-        if (data.hb_other is not None and data.hb_other > thres["hb_other"]) or \
-           (data.hbs is not None and data.hbs > thres["hbs"]) or \
-           (data.hbe is not None and data.hbe > thres["hbe"]):
+        if (data.hb_other !=0 and data.hb_other > thres["hb_other"]) or \
+           (data.hbs !=0 and data.hbs > thres["hbs"]) or \
+           (data.hbe !=0 and data.hbe > thres["hbe"]):
             diagnosis = labels[0]
             reason= ""
 
@@ -67,6 +70,10 @@ def diendihst(data, thres, labels):
 
     return diagnosis, reason
 
+
+def cal_tsat(fe, transferrin):
+    # or fe*100/tibc
+    return fe*70.9/transferrin
 
 
 
