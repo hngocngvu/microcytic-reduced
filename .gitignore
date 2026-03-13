@@ -2,8 +2,6 @@ data/
 
 __pycache__/
 
-*__init__.py
-
 note.txt
 
 eda/
