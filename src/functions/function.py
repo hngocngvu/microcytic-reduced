@@ -47,22 +47,21 @@ def diendihst(data, thres, labels):
     diagnosis = ""
     reason = ""
 
-    if data.dotbiengen:
-        if data.hbbart !=0 and data.hbbart > thres["hbbart"]: 
-            diagnosis = labels[5]
-            reason= ""
+    if data.hbbart !=0 and data.hbbart > thres["hbbart"]: 
+        diagnosis = labels[5]
+        reason= ""
 
 
-        if data.hba2 !=0 and data.hba2 > thres["hba2"]:
-            diagnosis = labels[6]
-            reason= ""
+    if data.hba2 !=0 and data.hba2 > thres["hba2"]:
+        diagnosis = labels[6]
+        reason= ""
 
 
-        if (data.hb_other !=0 and data.hb_other > thres["hb_other"]) or \
-           (data.hbs !=0 and data.hbs > thres["hbs"]) or \
-           (data.hbe !=0 and data.hbe > thres["hbe"]):
-            diagnosis = labels[0]
-            reason= ""
+    if (data.hb_other !=0 and data.hb_other > thres["hb_other"]) or \
+        (data.hbs !=0 and data.hbs > thres["hbs"]) or \
+        (data.hbe !=0 and data.hbe > thres["hbe"]):
+        diagnosis = labels[0]
+        reason= ""
 
 
     else: 
