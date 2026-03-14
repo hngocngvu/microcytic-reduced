@@ -19,22 +19,25 @@ st.markdown(
     "<h1 style='text-align: center;'>Hệ thống chẩn đoán bệnh về hồng cầu nhỏ</h1>",
     unsafe_allow_html=True
 )
+
+gender = st.radio(
+    "Giới tính",
+    ["Nam", "Nữ","Khác"]
+        )
+if gender == "Nữ":
+    kinh_nguyet= st.checkbox("Kinh nguyệt nhiều, kéo dài")
+    pregnant= st.checkbox("Có thai")
+else:
+    kinh_nguyet= False
+    pregnant= False
+
+
+
 with st.form("form"):
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
         st.subheader("Thông tin chung và tiền sử")
-        gender = st.radio(
-            "Giới tính",
-            ["Nam", "Nữ","Khác"]
-        )
-        if gender == "Nữ":
-            kinh_nguyet= st.checkbox("Kinh nguyệt nhiều, kéo dài")
-            pregnant= st.checkbox("Có thai")
-        else:
-            kinh_nguyet= False
-            pregnant= False
-
         da_day= st.checkbox("Viêm loét dạ dày, tá tràng hoặc tiền sử cẳt dạ dày, tá tràng")
         tri= st.checkbox("Trĩ chảy máu")
         diet= st.checkbox("Chế độ ăn kiêng, ăn chay")
