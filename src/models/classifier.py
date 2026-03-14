@@ -36,10 +36,14 @@ class Classifier():
             tsat= cal_tsat(data.fe, data.transferrin)
 
         if any(getattr(data, f) != 0 for f in FIELDS):
+
+            d, r= diendihst(data, thres, labels)
+            diagnoses.append(d)
+            reasons.append(r)
+
             if data.dotbiengen:
-                d, r= diendihst(data, thres, labels)
-                diagnoses.append(d)
-                reasons.append(r)
+                diagnoses.append(labels[0])
+                reasons.append("Phát hiện đột biến gen Thalassemia")
             
     
             if data.mcv < 80: 
@@ -93,12 +97,12 @@ class Classifier():
                                 reasons.append("Cần điện di huyết sắc tố để kiểm tra đột biến gen.")
                             else: 
                                 d, r= diendihst(data, thres, labels)
-                                diagnosis.append(d)
+                                diagnoses.append(d)
                                 reasons.append(r)
 
                         else: 
                             reasons.append("Gợi ý IDA + tiền sử")
-                            diagnosis.append(labels[1])
+                            diagnoses.append(labels[1])
 
 
             else: 
@@ -106,7 +110,7 @@ class Classifier():
 
                     if data.ferritin < thres["ferritin"][0] and (data.rdw < thres["rdw"] or cal_mentzer(data.mcv, data.rbc) > thres['mentzer']):
                         # trả về IDA
-                        diagnosis.append(labels[1])
+                        diagnoses.append(labels[1])
 
                     else:
                         if not data.dotbiengen:
