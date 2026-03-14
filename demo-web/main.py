@@ -49,7 +49,7 @@ with st.form("form"):
 
     with col3: 
         st.subheader("Chỉ số hóa sinh máu")
-        fe= st.number_input("Định lượng Sắt huyết thành (Fe)")
+        fe= st.number_input("Định lượng Sắt huyết thanh (Fe)")
         ferritin= st.number_input("Định lượng Ferritin")
         transferrin= st.number_input("Định lượng Transferrin")
         tibc= st.number_input("TIBC (khả năng gắn sắt toàn phần: máy đo)")
