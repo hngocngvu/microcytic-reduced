@@ -24,13 +24,18 @@ with st.form("form"):
 
     with col1:
         st.subheader("Thông tin chung và tiền sử")
-        gender = st.selectbox(
-        "Giới tính",
-        ["Nam", "Nữ"])
-        kinh_nguyet= st.checkbox("Kinh nguyệt nhiều, kéo dài")
+        gender = st.radio(
+            "Giới tính",
+            ["Nam", "Nữ","Khác"]
+        )
+        enter = st.form_submit_button("Enter")
+        if enter:
+            if gender == "Nữ":
+                kinh_nguyet= st.checkbox("Kinh nguyệt nhiều, kéo dài")
+                pregnant= st.checkbox("Có thai")
+
         da_day= st.checkbox("Viêm loét dạ dày, tá tràng hoặc tiền sử cẳt dạ dày, tá tràng")
         tri= st.checkbox("Trĩ chảy máu")
-        pregnant= st.checkbox("Có thai")
         diet= st.checkbox("Chế độ ăn kiêng, ăn chay")
 
         st.subheader("Tiền sử liên quan đến thiếu máu trong tình trạng viêm")
