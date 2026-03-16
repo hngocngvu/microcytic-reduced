@@ -14,30 +14,30 @@ class Input():
     cancer:  Optional[bool]= False
     phau_thuat:  Optional[bool]= False
 
-    rbc: Optional[float]= 0
-    hb: Optional[float]= 0
-    mcv: Optional[float]= 0
-    mchc: Optional[float]= 0
-    rdw: Optional[float]= 0
-    ret_he: Optional[float]= 0
+    rbc: Optional[float]= None 
+    hb: Optional[float]=  None 
+    mcv: Optional[float]=  None 
+    mchc: Optional[float]=  None 
+    rdw: Optional[float]=  None 
+    ret_he: Optional[float]=  None 
 
-    fe: Optional[float]= 0
-    ferritin: Optional[float]= 0
-    transferrin: Optional[float]= 0
-    tibc: Optional[float]= 0
-    stfr: Optional[float]= 0
-    crp: Optional[float]= 0
+    fe: Optional[float]=  None 
+    ferritin: Optional[float]=  None 
+    transferrin: Optional[float]=  None 
+    tibc: Optional[float]=  None 
+    stfr: Optional[float]=  None 
+    crp: Optional[float]=  None 
 
     dotbiengen: Optional[bool]= False
-    hba: Optional[float]= 0
-    hba2: Optional[float]= 0
-    hbf: Optional[float]= 0
-    hbh: Optional[float]= 0
-    hbe: Optional[float]= 0
-    hbc: Optional[float]= 0
-    hbs: Optional[float]= 0
-    hbbart: Optional[float]= 0
-    hb_other: Optional[float]= 0
+    hba: Optional[float]=  None 
+    hba2: Optional[float]=  None 
+    hbf: Optional[float]=  None 
+    hbh: Optional[float]=  None 
+    hbe: Optional[float]=  None 
+    hbc: Optional[float]=  None 
+    hbs: Optional[float]=  None
+    hbbart: Optional[float]=  None 
+    hb_other: Optional[float]=  None 
 
 
 @dataclass
