@@ -2,6 +2,18 @@ import io
 import pandas as pd
 from docx import Document
 from reportlab.pdfgen import canvas
+import os
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+import sys
+
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+FONT_PATH = os.path.join(BASE_DIR, "assets", "DejaVuSans.ttf")
+
+pdfmetrics.registerFont(TTFont('DejaVu', FONT_PATH))
+
 
 def export_excel(record):
     """Trả về bytes của file Excel"""
@@ -24,10 +36,13 @@ def export_word(record):
     buffer.seek(0)
     return buffer.getvalue()
 
+# Đăng ký 1 lần (có thể đặt ở đầu file hoặc __init__)
+
 def export_pdf(record):
-    """Trả về bytes của file PDF"""
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer)
+    
+    c.setFont('DejaVu', 12)  # Dùng font đã đăng ký
     
     y = 800
     c.drawString(100, y, "BÁO CÁO CHẨN ĐOÁN")

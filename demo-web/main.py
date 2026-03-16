@@ -348,7 +348,7 @@ if page == "Xuất báo cáo":
                 st.session_state.excel_bytes = export_excel(record)
                 st.session_state.word_bytes = export_word(record)
                 st.session_state.pdf_bytes = export_pdf(record)
-                st.success("✅ Đã tải thông tin và tạo file thành công!")
+                st.success("Đã tải thông tin và tạo file thành công!")
             except Exception as e:
                 st.error(f"Lỗi tạo file: {str(e)}")
 
