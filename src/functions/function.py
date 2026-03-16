@@ -8,7 +8,7 @@ if BASE_DIR not in os.sys.path:
 
 import math
 
-def parse_number(t) -> float | None:
+def parse_number(t):
     t = str(t).strip()
 
     if t == "":
@@ -21,6 +21,8 @@ def clean_text(t):
     return t.lower()
 
 def cal_mentzer(mcv, rbc):
+    if rbc is None or rbc == 0:
+        return None
     return mcv/rbc
 
 def stfr_ferritin_index(stfr, ferritin, thres, labels):
@@ -48,8 +50,6 @@ def stfr_ferritin_index(stfr, ferritin, thres, labels):
 
     return diagnosis, reason
 
-def cal_mentzer(mcv, rbc):
-    return mcv/rbc
 
 
 def diendihst(data, thres, labels):
@@ -81,6 +81,8 @@ def diendihst(data, thres, labels):
 
 def cal_tsat(fe, transferrin):
     # or fe*100/tibc
+    if transferrin is None or transferrin == 0:
+        return None
     return fe*70.9/transferrin
 
 
