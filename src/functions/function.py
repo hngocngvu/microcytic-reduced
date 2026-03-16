@@ -84,8 +84,6 @@ def cal_tsat(fe, transferrin):
     try:
         if fe is None or transferrin is None:
             return None
-        if math.isnan(fe) or math.isnan(transferrin):
-            return None
         if transferrin == 0:
             return None
         return fe * 70.9 / transferrin
