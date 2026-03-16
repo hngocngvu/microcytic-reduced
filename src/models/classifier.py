@@ -109,7 +109,8 @@ class Classifier():
             else: 
                 if data.rdw is not None or data.mcv is not None or data.rbc is not None or data.ferritin is not None:
 
-                    if data.ferritin < thres["ferritin"][0] and (data.rdw < thres["rdw"] or mentzer > thres['mentzer']):
+
+                    if data.ferritin < thres["ferritin"][0] and (mentzer is not None and (data.rdw < thres["rdw"] or mentzer > thres['mentzer'])):
                         # trả về IDA
                         diagnoses.append(labels[1])
 
