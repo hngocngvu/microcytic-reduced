@@ -84,6 +84,8 @@ def cal_tsat(fe, transferrin):
     if transferrin is not None and fe is not None:
         if transferrin != 0:
             return fe*70.9/transferrin
+        else: 
+            return None
     else:
         return None
 
