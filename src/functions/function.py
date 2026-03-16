@@ -66,9 +66,9 @@ def diendihst(data, thres, labels):
         reason= ""
 
 
-    if (data.hb_other !=0 and data.hb_other > thres["hb_other"]) or \
-        (data.hbs !=0 and data.hbs > thres["hbs"]) or \
-        (data.hbe !=0 and data.hbe > thres["hbe"]):
+    if (data.hb_other is not None and data.hb_other > thres["hb_other"]) or \
+        (data.hbs is not None and data.hbs > thres["hbs"]) or \
+        (data.hbe is not None and data.hbe > thres["hbe"]):
         diagnosis = labels[0]
         reason= ""
 
@@ -81,8 +81,9 @@ def diendihst(data, thres, labels):
 
 def cal_tsat(fe, transferrin):
     # or fe*100/tibc
-    if transferrin != 0 and transferrin is not None and fe is not None:
-        return fe*70.9/transferrin
+    if transferrin is not None and fe is not None:
+        if transferrin != 0:
+            return fe*70.9/transferrin
     else:
         return None
 
