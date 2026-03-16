@@ -82,9 +82,24 @@ if page == "Chẩn đoán":
 
             diet= st.checkbox("Chế độ ăn kiêng, ăn chay")
             # st.write(diet)
+            tiensu= ["Gout", "Viêm khớp", "Lupus ban đỏ hệ thống", "Bệnh thận mạn", "Viêm gan mạn"]
+            selected = st.selectbox("Chọn bệnh tiền sử", [""] + tiensu)
+            if st.button("Thêm vào", disabled=not selected): st.session_state.benh_moi = selected
+            default_text = st.session_state.get("tien_su_full", "")
+            
+            if "benh_moi" in st.session_state:
+                default_text += f"\n- {st.session_state.benh_moi}" if default_text else f"- {st.session_state.benh_moi}"
+                del st.session_state.benh_moi
+            
+            tien_su = st.text_area(
+                "Nội dung (có thể chỉnh sửa)",
+                value=default_text,
+                height=150
+            )
+            st.session_state.tien_su_full = tien_su
 
-            st.subheader("Tiền sử liên quan đến thiếu máu trong tình trạng viêm")
-            man_tinh= st.checkbox("Có bệnh nhiễm trùng/viêm mãn tính đang điều trị: gout, viêm khớp, nhiễm khuẩn, lupus ban đỏ hệ thống, bệnh thận mạn, viêm gan mạn ,...")
+
+
             # st.write(man_tinh)
 
             cancer= st.checkbox("Ung thư đang điều trị")
@@ -249,7 +264,7 @@ if page == "Tìm kiếm bệnh nhân":
         "<h1 style='text-align: center;'>Tìm kiếm bệnh nhân</h1>",
         unsafe_allow_html=True
     )
-    value = st.text_input("Nhập giá trị/từ khóa tìm kiếm")
+    value = st.text_input("Nhập giá trị tìm kiếm")
 
     search_button = st.button("Search")
 
