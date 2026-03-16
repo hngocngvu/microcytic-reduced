@@ -1,12 +1,17 @@
 import os
 from typing import Dict, List, Optional, Tuple
 
-cwd= os.getcwd()
-BASE_DIR= os.path.join(cwd,"..","..")
+BASE_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..")
+)
 if BASE_DIR not in os.sys.path:
     os.sys.path.append(BASE_DIR)
 
 import math
+
+def join_text(texts):
+    return ", ".join(texts)
+
 
 def parse_number(t):
     t = str(t).strip()
@@ -19,6 +24,12 @@ def parse_number(t):
 
 def clean_text(t):
     return t.lower()
+
+def clean_cham(text):
+    return text.rstrip('.').strip()
+
+def clean_phay(text):
+    return text.lstrip(',').strip()
 
 def cal_mentzer(mcv, rbc):
     if rbc is None or rbc == 0:

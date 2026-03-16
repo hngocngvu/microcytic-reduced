@@ -4,13 +4,14 @@ import os
 # tsat%= fe*100%/tibc or fe*70.9/transferin
 # stfr/fer_idx= stfr/log(ferritin)
 
-cwd= os.getcwd()
-BASE_DIR= os.path.join(cwd,"..","..")
+BASE_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..")
+)
 if BASE_DIR not in os.sys.path:
     os.sys.path.append(BASE_DIR)
 
 from src.dataclass.schema import Input, Output, Config
-from src.functions.function import clean_text, stfr_ferritin_index, cal_mentzer, diendihst, cal_tsat
+from src.functions.function import join_text, clean_text, stfr_ferritin_index, cal_mentzer, diendihst, cal_tsat, clean_phay, clean_cham
 
 class Classifier():
     def __init__(self, data, config):
@@ -122,7 +123,17 @@ class Classifier():
                             diagnoses.append(d)
                             reasons.append(r)
 
-        return Output(diagnoses= diagnoses, reasons=reasons)
+        diagnoses= [clean_cham(d) for d in diagnoses]
+        reasons = [clean_cham(r) for r in reasons]
+
+        concat_diagnoses= join_text(diagnoses)
+        concat_reasons= join_text(reasons)
+        
+        concat_diagnoses= clean_phay(concat_diagnoses)
+        concat_reasons= clean_phay(concat_reasons)
+
+        
+        return Output(diagnoses= concat_diagnoses, reasons= concat_reasons)
 
 
 
