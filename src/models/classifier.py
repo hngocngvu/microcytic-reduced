@@ -32,10 +32,10 @@ class Classifier():
 
         FIELDS = ["mcv", "hb", "crp", "ferritin", "transferrin", "stfr", "rdw", "rbc", "dotbiengen", "hbbart", "hba2", "hb_other", "hbs", "hbe"]
 
-        if data.fe !=0 and data.transferrin != 0:
+        if data.fe is not None and data.transferrin is not None and data.transferrin != 0:
             tsat= cal_tsat(data.fe, data.transferrin)
 
-        if any(getattr(data, f) != 0 for f in FIELDS):
+        if any(getattr(data, f) is not None for f in FIELDS):
 
             d, r= diendihst(data, thres, labels)
             diagnoses.append(d)
@@ -46,7 +46,7 @@ class Classifier():
                 reasons.append("Phát hiện đột biến gen Thalassemia")
             
     
-            if data.mcv < 80: 
+            if data.mcv is not None and data.mcv < 80: 
                 reasons.append("Thể tích trung bình hồng cầu nhỏ hơn bình thường.")
 
 
@@ -58,13 +58,13 @@ class Classifier():
                     diagnoses.append(labels[1])
                 
                 else: 
-                    if data.crp == 0: pass
+                    if data.crp is None: pass
                     elif data.crp > thres['crp']:
-                        if data.ferritin == 0: pass
+                        if data.ferritin is None: pass
 
                         elif data.ferritin < thres["ferritin"][1]:
-                            if tsat != 0 or data.stfr !=0 or data.ferritin !=0:
-                                if tsat != 0:
+                            if tsat is not None or data.stfr is not None or data.ferritin is not None:
+                                if tsat is not None:
                                     if tsat < thres['tsat'][0]:
                                         # xét tiền sử, scoring dùng cho đoạn này, chưa biết vì sơ đồ không đề cập
                                         reasons.append("Cần dựa vào tiền sử để đưa ra kết luận chính xác.")
@@ -106,7 +106,7 @@ class Classifier():
 
 
             else: 
-                if data.rdw !=0 or data.mcv !=0 or data.rbc !=0 or data.ferritin !=0:
+                if data.rdw is not None or data.mcv is not None or data.rbc is not None or data.ferritin is not None:
 
                     if data.ferritin < thres["ferritin"][0] and (data.rdw < thres["rdw"] or cal_mentzer(data.mcv, data.rbc) > thres['mentzer']):
                         # trả về IDA
