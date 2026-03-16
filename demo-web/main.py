@@ -13,6 +13,7 @@ if BASE_DIR not in sys.path:
 
 from src.dataclass.schema import Input, Output, Config
 from src.models.classifier import Classifier
+from src.functions.function import parse_number 
 
 st.set_page_config(layout="wide")
 st.markdown(
@@ -49,32 +50,32 @@ with st.form("form"):
 
     with col2:
         st.subheader("Các đặc điểm hồng cầu")
-        hb= st.number_input("Hemoglobin (Hb)")
-        mcv= st.number_input("MCV")
-        mchc= st.number_input("MCHC")
-        rbc= st.number_input("RBC")
-        rdw= st.number_input("RDW")
-        ret_he= st.number_input("Ret-He")
+        hb= parse_number(st.text_input("Hemoglobin (Hb)"))
+        mcv= parse_number(st.text_input("MCV"))
+        mchc= parse_number(st.text_input("MCHC"))
+        rbc= parse_number(st.text_input("RBC"))
+        rdw= parse_number(st.text_input("RDW-CV"))
+        ret_he= parse_number(st.text_input("Ret-He"))
 
     with col3: 
         st.subheader("Chỉ số hóa sinh máu")
-        fe= st.number_input("Định lượng Sắt huyết thanh (Fe)")
-        ferritin= st.number_input("Định lượng Ferritin")
-        transferrin= st.number_input("Định lượng Transferrin")
-        tibc= st.number_input("TIBC (khả năng gắn sắt toàn phần: máy đo)")
-        stfr= st.number_input("Nồng độ thụ thể transferrin hòa tan")    
-        crp= st.number_input("CRP")
+        fe= parse_number(st.text_input("Định lượng Sắt huyết thanh (Fe)"))
+        ferritin= parse_number(st.text_input("Định lượng Ferritin"))
+        transferrin= parse_number(st.text_input("Định lượng Transferrin"))
+        tibc= parse_number(st.text_input("TIBC (khả năng gắn sắt toàn phần: máy đo)"))
+        stfr= parse_number(st.text_input("Nồng độ thụ thể transferrin hòa tan"))    
+        crp= parse_number(st.text_input("CRP"))
 
     with col4: 
         st.subheader("Xét nghiệm di huyết sắt tố và đột biến gen")
-        hba= st.number_input("HbA")
-        hba2= st.number_input("HbA2")
-        hbf= st.number_input("HbF")
-        hbh= st.number_input("HbH")
-        hbe= st.number_input("HbE")
-        hbc= st.number_input("HbC")
-        hbs= st.number_input("HbS")
-        hb_other= st.number_input("Chỉ số Hb khác nếu có")
+        hba= parse_number(st.text_input("HbA"))
+        hba2= parse_number(st.text_input("HbA2"))
+        hbf= parse_number(st.text_input("HbF"))
+        hbh= parse_number(st.text_input("HbH"))
+        hbe= parse_number(st.text_input("HbE"))
+        hbc= parse_number(st.text_input("HbC"))
+        hbs= parse_number(st.text_input("HbS"))
+        hb_other= parse_number(st.text_input("Chỉ số Hb khác nếu có"))
         dotbiengen= st.checkbox("Đột biến gen thalassemia")
 
     submitted = st.form_submit_button("Submit")
