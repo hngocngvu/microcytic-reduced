@@ -34,6 +34,7 @@ class Classifier():
 
         if data.fe is not None and data.transferrin is not None and data.transferrin != 0:
             tsat= cal_tsat(data.fe, data.transferrin)
+            mentzer= cal_mentzer(data.mcv, data.rbc)
 
         if any(getattr(data, f) is not None for f in FIELDS):
 
@@ -108,7 +109,7 @@ class Classifier():
             else: 
                 if data.rdw is not None or data.mcv is not None or data.rbc is not None or data.ferritin is not None:
 
-                    if data.ferritin < thres["ferritin"][0] and (data.rdw < thres["rdw"] or cal_mentzer(data.mcv, data.rbc) > thres['mentzer']):
+                    if data.ferritin < thres["ferritin"][0] and (data.rdw < thres["rdw"] or mentzer > thres['mentzer']):
                         # trả về IDA
                         diagnoses.append(labels[1])
 
