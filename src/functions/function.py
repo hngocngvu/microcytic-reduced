@@ -81,13 +81,13 @@ def diendihst(data, thres, labels):
 
 def cal_tsat(fe, transferrin):
     # or fe*100/tibc
+    if fe is None or transferrin is None:
+        return None
     if transferrin is not None and fe is not None:
         if transferrin != 0:
             return fe*70.9/transferrin
         else: 
             return None
-    else:
-        return None
 
 
 
