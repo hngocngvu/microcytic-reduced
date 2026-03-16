@@ -82,24 +82,42 @@ if page == "Chẩn đoán":
 
             diet= st.checkbox("Chế độ ăn kiêng, ăn chay")
             # st.write(diet)
-            tiensu= ["Gout", "Viêm khớp", "Lupus ban đỏ hệ thống", "Bệnh thận mạn", "Viêm gan mạn"]
-            selected = st.selectbox("Chọn bệnh tiền sử", [""] + tiensu)
-            if st.button("Thêm vào", disabled=not selected): st.session_state.benh_moi = selected
-            default_text = st.session_state.get("tien_su_full", "")
-            
-            if "benh_moi" in st.session_state:
-                default_text += f"\n- {st.session_state.benh_moi}" if default_text else f"- {st.session_state.benh_moi}"
-                del st.session_state.benh_moi
-            
+
+            # Danh sách bệnh
+
+            danh_sach_benh = ["Gout", "Viêm khớp", "Lupus ban đỏ hệ thống", "Bệnh thận mạn", "Viêm gan mạn"]
+
+            # Khởi tạo (chỉ chạy 1 lần đầu)
+            if "tien_su_text" not in st.session_state:
+                st.session_state.tien_su_text = ""  # Lưu nội dung text area
+            if "da_chon" not in st.session_state:
+                st.session_state.da_chon = ""  # Lưu bệnh vừa chọn
+
+            # Dropdown chọn bệnh
+            selected = st.selectbox(
+                "Chọn bệnh từ danh sách",
+                options=[""] + danh_sach_benh
+            )
+
+            # Nếu chọn bệnh MỚI (khác lần trước) → thêm vào text
+            if selected and selected != st.session_state.da_chon:
+                if st.session_state.tien_su_text:
+                    st.session_state.tien_su_text += f"\n- {selected}"
+                else:
+                    st.session_state.tien_su_text = f"- {selected}"
+                st.session_state.da_chon = selected  # Ghi nhớ đã chọn rồi
+
+            # Text area hiển thị + cho sửa
             tien_su = st.text_area(
-                "Nội dung (có thể chỉnh sửa)",
-                value=default_text,
+                "Bổ sung tiền sử (có thể chỉnh sửa)",
+                value=st.session_state.tien_su_text,
                 height=150
             )
-            st.session_state.tien_su_full = tien_su
 
+            # Lưu lại nếu user tự sửa trong text area
+            st.session_state.tien_su_text = tien_su
 
-
+            man_tinh = bool(selected) or bool(tien_su.strip())
             # st.write(man_tinh)
 
             cancer= st.checkbox("Ung thư đang điều trị")
