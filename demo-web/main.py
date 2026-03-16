@@ -85,7 +85,10 @@ if page == "Chẩn đoán":
 
             # Danh sách bệnh
 
-            danh_sach_benh = ["Gout", "Viêm khớp", "Lupus ban đỏ hệ thống", "Bệnh thận mạn", "Viêm gan mạn"]
+            danh_sach_benh = ["Gout", "Viêm khớp", "Lupus ban đỏ hệ thống", "Bệnh thận mạn", "Viêm gan mạn", "Loãng xương", 
+                              "Rối loạn lipid", "Rối loạn tiền đình", "Viêm gân gấp", "Áp xe gan", "Sốt kéo dài",
+                              "Quá tải sắt", "Đau ngực", "U lành", "HIV", "Giãn động mạch", "Polyp đại tràng", "Polyp dạ dày",
+                              "Nhồi máu não", "Stent mạch vành"]
 
             # Khởi tạo (chỉ chạy 1 lần đầu)
             if "tien_su_text" not in st.session_state:
@@ -95,7 +98,7 @@ if page == "Chẩn đoán":
 
             # Dropdown chọn bệnh
             selected = st.selectbox(
-                "Chọn bệnh từ danh sách",
+                "Chọn tiền sử hoặc bệnh kèm theo",
                 options=[""] + danh_sach_benh
             )
 
