@@ -6,5 +6,5 @@ note.txt
 
 eda/
 
-**/.streamlit/
+**/.streamlit/secrets.toml
 
