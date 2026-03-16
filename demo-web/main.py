@@ -40,97 +40,95 @@ with st.form("form"):
     with col1:
         st.subheader("Thông tin chung và tiền sử")
         da_day= st.checkbox("Viêm loét dạ dày, tá tràng hoặc tiền sử cẳt dạ dày, tá tràng")
-        st.write(da_day)
+        # st.write(da_day)
 
         tri= st.checkbox("Trĩ chảy máu")
-        st.write(tri)
+        # st.write(tri)
 
         diet= st.checkbox("Chế độ ăn kiêng, ăn chay")
-        st.write(diet)
+        # st.write(diet)
 
         st.subheader("Tiền sử liên quan đến thiếu máu trong tình trạng viêm")
         man_tinh= st.checkbox("Có bệnh nhiễm trùng/viêm mãn tính đang điều trị: gout, viêm khớp, nhiễm khuẩn, lupus ban đỏ hệ thống, bệnh thận mạn, viêm gan mạn ,...")
-        st.write(man_tinh)
+        # st.write(man_tinh)
 
         cancer= st.checkbox("Ung thư đang điều trị")
-        st.write(cancer)
+        # st.write(cancer)
 
         phau_thuat= st.checkbox("Sau phẫu thuật lớn, bỏng, chấn thương")
-        st.write(phau_thuat)
+        # st.write(phau_thuat)
 
     with col2:
         st.subheader("Các đặc điểm hồng cầu")
         hb= parse_number(st.text_input("Hemoglobin (Hb)"))
-        st.write(hb)
+        # st.write(hb)
 
         mcv= parse_number(st.text_input("MCV"))
-        st.write(mcv)
+        # st.write(mcv)
 
         mchc= parse_number(st.text_input("MCHC"))
-        st.write(mchc)
+        # st.write(mchc)
 
         rbc= parse_number(st.text_input("RBC"))
-        st.write(rbc)
+        # st.write(rbc)
 
         rdw= parse_number(st.text_input("RDW-CV"))
-        st.write(rdw)
+        # st.write(rdw)
 
         ret_he= parse_number(st.text_input("Ret-He"))
-        st.write(ret_he)
+        # st.write(ret_he)
 
     with col3: 
         st.subheader("Chỉ số hóa sinh máu")
         fe= parse_number(st.text_input("Định lượng Sắt huyết thanh (Fe)"))
-        st.write(fe)
-        st.write(type(fe))
+        # st.write(fe)
 
         ferritin= parse_number(st.text_input("Định lượng Ferritin"))
-        st.write(ferritin)
+        # st.write(ferritin)
 
         transferrin= parse_number(st.text_input("Định lượng Transferrin"))
-        st.write(transferrin)
-        st.write(type(transferrin))
+        # st.write(transferrin)
 
         tibc= parse_number(st.text_input("TIBC (khả năng gắn sắt toàn phần: máy đo)"))
-        st.write(tibc)
+        # st.write(tibc)
 
         stfr= parse_number(st.text_input("Nồng độ thụ thể transferrin hòa tan"))    
-        st.write(stfr)
+        # st.write(stfr)
 
         crp= parse_number(st.text_input("CRP"))
-        st.write(crp)
+        # st.write(crp)
 
     with col4: 
         st.subheader("Xét nghiệm di huyết sắt tố và đột biến gen")
         hba= parse_number(st.text_input("HbA"))
-        st.write(hba)
+        # st.write(hba)
 
         hba2= parse_number(st.text_input("HbA2"))
-        st.write(hba2)
+        # st.write(hba2)
 
         hbf= parse_number(st.text_input("HbF"))
-        st.write(hbf)
+        # st.write(hbf)
 
         hbh= parse_number(st.text_input("HbH"))
-        st.write(hbh)
+        # st.write(hbh)
 
         hbe= parse_number(st.text_input("HbE"))
-        st.write(hbe)
+        # st.write(hbe)
 
         hbc= parse_number(st.text_input("HbC"))
-        st.write(hbc)
+        # st.write(hbc)
 
         hbs= parse_number(st.text_input("HbS"))
-        st.write(hbs)
+        # st.write(hbs)
 
         hbbart= parse_number(st.text_input("Hb Bart"))
-        st.write(hbbart)
+        # st.write(hbbart)
 
         hb_other= parse_number(st.text_input("Chỉ số Hb khác nếu có"))
-        st.write(hb_other)
+        # st.write(hb_other)
 
         dotbiengen= st.checkbox("Đột biến gen thalassemia")
-        st.write(dotbiengen)
+        # st.write(dotbiengen)
 
     submitted = st.form_submit_button("Submit")
     if submitted:
