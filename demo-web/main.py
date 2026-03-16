@@ -130,7 +130,8 @@ with st.form("form"):
         dotbiengen= st.checkbox("Đột biến gen thalassemia")
         # st.write(dotbiengen)
 
-    submitted = st.form_submit_button("Submit")
+    submitted = st.form_submit_button("Submit", use_container_width=True, type="primary")
+                                      
     if submitted:
         config= Config()
 
