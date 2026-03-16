@@ -172,7 +172,7 @@ with st.form("form"):
         hb_other= hb_other,
 
         )
-        
+
         c= Classifier(patient, config)
         result= c.classify()
 
