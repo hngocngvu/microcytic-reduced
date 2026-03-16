@@ -82,12 +82,14 @@ with st.form("form"):
         st.subheader("Chỉ số hóa sinh máu")
         fe= parse_number(st.text_input("Định lượng Sắt huyết thanh (Fe)"))
         st.write(fe)
+        st.write(type(fe))
 
         ferritin= parse_number(st.text_input("Định lượng Ferritin"))
         st.write(ferritin)
 
         transferrin= parse_number(st.text_input("Định lượng Transferrin"))
         st.write(transferrin)
+        st.write(type(transferrin))
 
         tibc= parse_number(st.text_input("TIBC (khả năng gắn sắt toàn phần: máy đo)"))
         st.write(tibc)
