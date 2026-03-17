@@ -63,224 +63,221 @@ if page == "Chẩn đoán":
     dob_str = dob.isoformat()
 
 
-    with st.form("form"):
-        col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4 = st.columns(4)
 
-        with col1:
-            st.subheader("Tiền sử (Tình trạng)")
+    with col1:
+        st.subheader("Tiền sử (Tình trạng)")
 
-            select =[]
+        select =[]
 
-            kinh_nguyet= st.checkbox("Kinh nguyệt nhiều, kéo dài", disabled= (gender != "Nữ"))
-            pregnant= st.checkbox("Có thai", disabled=(gender != "Nữ"))
+        kinh_nguyet= st.checkbox("Kinh nguyệt nhiều, kéo dài", disabled= (gender != "Nữ"))
+        pregnant= st.checkbox("Có thai", disabled=(gender != "Nữ"))
             
-            da_day= st.checkbox("Viêm loét dạ dày, tá tràng hoặc tiền sử cẳt dạ dày, tá tràng")
-            if da_day: 
-                select.append("Tiền sử dạ dày")
+        da_day= st.checkbox("Viêm loét dạ dày, tá tràng hoặc tiền sử cẳt dạ dày, tá tràng")
+        if da_day: 
+            select.append("Tiền sử dạ dày")
 
             # st.write(da_day)
 
-            tri= st.checkbox("Trĩ chảy máu")
-            if tri:
-                select.append("Trĩ")
+        tri= st.checkbox("Trĩ chảy máu")
+        if tri:
+            select.append("Trĩ")
             # st.write(tri)
 
-            diet= st.checkbox("Chế độ ăn kiêng, ăn chay")
+        diet= st.checkbox("Chế độ ăn kiêng, ăn chay")
             # st.write(diet)
-            if diet:
-                select.append("Ăn kiêng")
+        if diet:
+            select.append("Ăn kiêng")
 
             # Danh sách bệnh
 
-            danh_sach_benh = ["Gout", "Viêm khớp", "Lupus ban đỏ hệ thống", "Bệnh thận mạn", "Viêm gan mạn", "Loãng xương", 
+        danh_sach_benh = ["Gout", "Viêm khớp", "Lupus ban đỏ hệ thống", "Bệnh thận mạn", "Viêm gan mạn", "Loãng xương", 
                               "Rối loạn lipid", "Rối loạn tiền đình", "Viêm gân gấp", "Áp xe gan", "Sốt kéo dài",
                               "Quá tải sắt", "Đau ngực", "U lành", "HIV", "Giãn động mạch", "Polyp đại tràng", "Polyp dạ dày",
                               "Nhồi máu não", "Stent mạch vành"]
 
             # Khởi tạo (chỉ chạy 1 lần đầu)
-            if "tien_su_text" not in st.session_state:
-                st.session_state.tien_su_text = ""  # Lưu nội dung text area
-            if "da_chon" not in st.session_state:
-                st.session_state.da_chon = ""  # Lưu bệnh vừa chọn
+        if "tien_su_text" not in st.session_state:
+            st.session_state.tien_su_text = ""  # Lưu nội dung text area
+        if "da_chon" not in st.session_state:
+            st.session_state.da_chon = ""  # Lưu bệnh vừa chọn
 
             # Dropdown chọn bệnh
-            selected = st.selectbox(
+        selected = st.selectbox(
                 "Chọn tiền sử hoặc bệnh kèm theo",
                 options=[""] + danh_sach_benh
             )
 
 
             # Nếu chọn bệnh MỚI (khác lần trước) → thêm vào text
-            if selected and selected != st.session_state.da_chon:
-                if st.session_state.tien_su_text:
-                    st.session_state.tien_su_text += f"\n- {selected}"
-                else:
-                    st.session_state.tien_su_text = f"- {selected}"
-                st.session_state.da_chon = selected  # Ghi nhớ đã chọn rồi
+        if selected and selected != st.session_state.da_chon:
+            if st.session_state.tien_su_text:
+                st.session_state.tien_su_text += f"\n- {selected}"
+            else:
+                st.session_state.tien_su_text = f"- {selected}"
+            st.session_state.da_chon = selected  # Ghi nhớ đã chọn rồi
 
             # Text area hiển thị + cho sửa
-            tien_su = st.text_area(
+        tien_su = st.text_area(
                 "Bổ sung tiền sử (có thể chỉnh sửa)",
                 value=st.session_state.tien_su_text,
                 height=150
             )
 
             # Lưu lại nếu user tự sửa trong text area
-            st.session_state.tien_su_text = tien_su
-            select.append(tien_su)
+        st.session_state.tien_su_text = tien_su
+        select.append(tien_su)
 
 
-            man_tinh = bool(selected) or bool(tien_su.strip())
+        man_tinh = bool(selected) or bool(tien_su.strip())
             # st.write(man_tinh)
 
-            cancer= st.checkbox("Ung thư đang điều trị")
+        cancer= st.checkbox("Ung thư đang điều trị")
             # st.write(cancer)
-            if cancer:
-                select.append("Đang điều trị ung thư")
+        if cancer:
+            select.append("Đang điều trị ung thư")
 
-            phau_thuat= st.checkbox("Sau phẫu thuật lớn, bỏng, chấn thương")
-            if phau_thuat:
-                select.append("Tiền sử phẫu thuật, bỏng, chấn thương")
+        phau_thuat= st.checkbox("Sau phẫu thuật lớn, bỏng, chấn thương")
+        if phau_thuat:
+            select.append("Tiền sử phẫu thuật, bỏng, chấn thương")
             # st.write(phau_thuat)
 
-            if select:
-                st.success("Tình trạng đã chọn:")
-                for item in select:
-                    st.write(f" {item}")
+        if select:
+            st.success("Tình trạng đã chọn:")
+            for item in select:
+                st.write(f" {item}")
 
-        with col2:
-            st.subheader("Các đặc điểm hồng cầu")
-            hb= parse_number(st.text_input("Hemoglobin (Hb)"))
+    with col2:
+        st.subheader("Các đặc điểm hồng cầu")
+        hb= parse_number(st.text_input("Hemoglobin (Hb)"))
             # st.write(hb)
 
-            mcv= parse_number(st.text_input("MCV"))
+        mcv= parse_number(st.text_input("MCV"))
             # st.write(mcv)
 
 
-            mchc= parse_number(st.text_input("MCHC"))
+        mchc= parse_number(st.text_input("MCHC"))
             # st.write(mchc)
 
-            rbc= parse_number(st.text_input("RBC"))
+        rbc= parse_number(st.text_input("RBC"))
             # st.write(rbc)
 
-            rdw= parse_number(st.text_input("RDW-CV"))
+        rdw= parse_number(st.text_input("RDW-CV"))
             # st.write(rdw)
 
-            ret_he= parse_number(st.text_input("Ret-He"))
+        ret_he= parse_number(st.text_input("Ret-He"))
             # st.write(ret_he)
 
-        with col3: 
-            st.subheader("Chỉ số hóa sinh máu")
-            fe= parse_number(st.text_input("Định lượng Sắt huyết thanh (Fe)"))
+    with col3: 
+        st.subheader("Chỉ số hóa sinh máu")
+        fe= parse_number(st.text_input("Định lượng Sắt huyết thanh (Fe)"))
             # st.write(fe)
 
-            ferritin= parse_number(st.text_input("Định lượng Ferritin"))
+        ferritin= parse_number(st.text_input("Định lượng Ferritin"))
             # st.write(ferritin)
 
-            transferrin= parse_number(st.text_input("Định lượng Transferrin"))
+        transferrin= parse_number(st.text_input("Định lượng Transferrin"))
             # st.write(transferrin)
 
-            tibc= parse_number(st.text_input("TIBC (khả năng gắn sắt toàn phần: máy đo)"))
+        tibc= parse_number(st.text_input("TIBC (khả năng gắn sắt toàn phần: máy đo)"))
             # st.write(tibc)
 
-            stfr= parse_number(st.text_input("Nồng độ thụ thể transferrin hòa tan"))    
+        stfr= parse_number(st.text_input("Nồng độ thụ thể transferrin hòa tan"))    
             # st.write(stfr)
 
-            crp= parse_number(st.text_input("CRP"))
+        crp= parse_number(st.text_input("CRP"))
             # st.write(crp)
 
-        with col4: 
-            st.subheader("Xét nghiệm di huyết sắt tố và đột biến gen")
-            hba= parse_number(st.text_input("HbA"))
+    with col4: 
+        st.subheader("Xét nghiệm di huyết sắt tố và đột biến gen")
+        hba= parse_number(st.text_input("HbA"))
             # st.write(hba)
 
-            hba2= parse_number(st.text_input("HbA2"))
+        hba2= parse_number(st.text_input("HbA2"))
             # st.write(hba2)
 
-            hbf= parse_number(st.text_input("HbF"))
+        hbf= parse_number(st.text_input("HbF"))
             # st.write(hbf)
 
-            hbh= parse_number(st.text_input("HbH"))
+        hbh= parse_number(st.text_input("HbH"))
             # st.write(hbh)
 
-            hbe= parse_number(st.text_input("HbE"))
+        hbe= parse_number(st.text_input("HbE"))
             # st.write(hbe)
 
-            hbc= parse_number(st.text_input("HbC"))
+        hbc= parse_number(st.text_input("HbC"))
             # st.write(hbc)
 
-            hbs= parse_number(st.text_input("HbS"))
+        hbs= parse_number(st.text_input("HbS"))
             # st.write(hbs)
 
-            hbbart= parse_number(st.text_input("Hb Bart"))
+        hbbart= parse_number(st.text_input("Hb Bart"))
             # st.write(hbbart)
 
-            hb_other= parse_number(st.text_input("Chỉ số Hb khác nếu có"))
+        hb_other= parse_number(st.text_input("Chỉ số Hb khác nếu có"))
             # st.write(hb_other)
 
-            dotbiengen= st.checkbox("Đột biến gen thalassemia")
+        dotbiengen= st.checkbox("Đột biến gen thalassemia")
             # st.write(dotbiengen)
 
-        submitted = st.form_submit_button("Submit", use_container_width=True, type="primary")
+    submitted = st.button("Submit", use_container_width=True, type="primary")
                                         
-        if submitted:
-            config= Config()
+    if submitted:
+        config= Config()
 
-            patient= Input(gender,
-            kinh_nguyet= kinh_nguyet,
-            da_day= da_day,
-            tri= tri,
-            pregnant= pregnant,
-            diet= diet,
+        patient= Input(gender,
+        kinh_nguyet= kinh_nguyet,
+        da_day= da_day,
+        tri= tri,
+        pregnant= pregnant,
+        diet= diet,
 
-            man_tinh= man_tinh,
-            cancer= cancer,
-            phau_thuat= phau_thuat,
+        man_tinh= man_tinh,
+        cancer= cancer,
+        phau_thuat= phau_thuat,
 
-            rbc= rbc,
-            hb= hb,
-            mcv= mcv,
-            mchc= mchc,
-            rdw= rdw,
-            ret_he= ret_he,
+        rbc= rbc,
+        hb= hb,
+        mcv= mcv,
+        mchc= mchc,
+        rdw= rdw,
+        ret_he= ret_he,
 
 
-            fe=fe,
-            ferritin= ferritin,
-            transferrin= transferrin,
-            tibc= tibc,
-            stfr= stfr,
-            crp= crp,
+        fe=fe,
+        ferritin= ferritin,
+        transferrin= transferrin,
+        tibc= tibc,
+        stfr= stfr,
+        crp= crp,
 
-            dotbiengen= dotbiengen,
-            hba= hba,
-            hba2= hba2,
-            hbf= hbf,
-            hbh= hbh,
-            hbe= hbe, 
-            hbc= hbc,
-            hbs= hbs,
-            hbbart= hbbart,
-            hb_other= hb_other,
+        dotbiengen= dotbiengen,
+        hba= hba,
+        hba2= hba2,
+        hbf= hbf,
+        hbh= hbh,
+        hbe= hbe, 
+        hbc= hbc,
+        hbs= hbs,
+        hbbart= hbbart,
+        hb_other= hb_other,)
 
-            )
+        c= Classifier(patient, config)
+        result= c.classify()
 
-            c= Classifier(patient, config)
-            result= c.classify()
+        st.subheader("Kết quả chẩn đoán")
 
-            st.subheader("Kết quả chẩn đoán")
+        st.success(result.diagnoses)
 
-            st.success(result.diagnoses)
+        st.subheader("Nguyên nhân và gợi ý")
 
-            st.subheader("Nguyên nhân và gợi ý")
+        st.info(result.reasons)
 
-            st.info(result.reasons)
-
-            info= Patient(id= patient_id, full_name= full_name,
+        info= Patient(id= patient_id, full_name= full_name,
                         dob= dob_str, gender= gender, 
                         phone_number= phone_number, address= address
                         )
-            record= DiagnosisRecord(
+        record= DiagnosisRecord(
                 id= record_id, patient_id= patient_id,
                 kinh_nguyet= kinh_nguyet, da_day= da_day,
                 tri= tri, pregnant= pregnant, diet= diet,
@@ -292,11 +289,11 @@ if page == "Chẩn đoán":
                 hbs= hbs, hbbart= hbbart, hb_other= hb_other, 
                 diagnoses= result.diagnoses, reasons= result.reasons
             )
-            db= MedicalDatabase()
-            db.create_tables()
-            db.add_patient(info)
-            db.add_record(record)
-            st.success("Đã lưu hồ sơ bệnh nhân thành công")
+        db= MedicalDatabase()
+        db.create_tables()
+        db.add_patient(info)
+        db.add_record(record)
+        st.success("Đã lưu hồ sơ bệnh nhân thành công")
 
 if page == "Tìm kiếm bệnh nhân":
     db= MedicalDatabase()
