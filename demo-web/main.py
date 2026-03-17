@@ -48,7 +48,7 @@ if page == "Chẩn đoán":
         "Giới tính",
         ["Nam", "Nữ","Khác"]
             )
-        if gender != "Nữ":
+        if gender == "Nam":
             kinh_nguyet = False
             pregnant = False
 
@@ -70,8 +70,8 @@ if page == "Chẩn đoán":
 
         select =[]
 
-        kinh_nguyet= st.checkbox("Kinh nguyệt nhiều, kéo dài", disabled= (gender != "Nữ"))
-        pregnant= st.checkbox("Có thai", disabled=(gender != "Nữ"))
+        kinh_nguyet= st.checkbox("Kinh nguyệt nhiều, kéo dài", disabled= (gender == "Nam"))
+        pregnant= st.checkbox("Có thai", disabled=(gender == "Nam"))
             
         da_day= st.checkbox("Viêm loét dạ dày, tá tràng hoặc tiền sử cẳt dạ dày, tá tràng")
         if da_day: 
