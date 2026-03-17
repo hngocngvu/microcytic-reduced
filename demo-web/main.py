@@ -48,6 +48,9 @@ if page == "Chẩn đoán":
         "Giới tính",
         ["Nam", "Nữ","Khác"]
             )
+        if gender != "Nữ":
+            kinh_nguyet = False
+            pregnant = False
 
     with c2:
         phone_number= st.text_input("Số điện thoại liên hệ")
@@ -59,29 +62,33 @@ if page == "Chẩn đoán":
 
     dob_str = dob.isoformat()
 
-    if gender == "Nữ":
-        kinh_nguyet= st.checkbox("Kinh nguyệt nhiều, kéo dài")
-        pregnant= st.checkbox("Có thai")
-    else:
-        kinh_nguyet= False
-        pregnant= False
-
-
 
     with st.form("form"):
         col1, col2, col3, col4 = st.columns(4)
 
         with col1:
-            st.subheader("Tiền sử")
+            st.subheader("Tiền sử (Tình trạng)")
+
+            select =[]
+
+            kinh_nguyet= st.checkbox("Kinh nguyệt nhiều, kéo dài", disabled= (gender != "Nữ"))
+            pregnant= st.checkbox("Có thai", disabled=(gender != "Nữ"))
             
             da_day= st.checkbox("Viêm loét dạ dày, tá tràng hoặc tiền sử cẳt dạ dày, tá tràng")
+            if da_day: 
+                select.append("Tiền sử dạ dày")
+
             # st.write(da_day)
 
             tri= st.checkbox("Trĩ chảy máu")
+            if tri:
+                select.append("Trĩ")
             # st.write(tri)
 
             diet= st.checkbox("Chế độ ăn kiêng, ăn chay")
             # st.write(diet)
+            if diet:
+                select.append("Ăn kiêng")
 
             # Danh sách bệnh
 
@@ -102,6 +109,9 @@ if page == "Chẩn đoán":
                 options=[""] + danh_sach_benh
             )
 
+            if selected:
+                select.append(selected)
+
             # Nếu chọn bệnh MỚI (khác lần trước) → thêm vào text
             if selected and selected != st.session_state.da_chon:
                 if st.session_state.tien_su_text:
@@ -119,15 +129,26 @@ if page == "Chẩn đoán":
 
             # Lưu lại nếu user tự sửa trong text area
             st.session_state.tien_su_text = tien_su
+            select.append(tien_su)
+
 
             man_tinh = bool(selected) or bool(tien_su.strip())
             # st.write(man_tinh)
 
             cancer= st.checkbox("Ung thư đang điều trị")
             # st.write(cancer)
+            if cancer:
+                select.append("Đang điều trị ung thư")
 
             phau_thuat= st.checkbox("Sau phẫu thuật lớn, bỏng, chấn thương")
+            if phau_thuat:
+                select.append("Tiền sử phẫu thuật, bỏng, chấn thương")
             # st.write(phau_thuat)
+
+            if select:
+                st.success("Tình trạng đã chọn:")
+                for item in select:
+                    st.write(f" {item}")
 
         with col2:
             st.subheader("Các đặc điểm hồng cầu")
@@ -136,6 +157,7 @@ if page == "Chẩn đoán":
 
             mcv= parse_number(st.text_input("MCV"))
             # st.write(mcv)
+
 
             mchc= parse_number(st.text_input("MCHC"))
             # st.write(mchc)
