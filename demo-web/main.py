@@ -109,8 +109,6 @@ if page == "Chẩn đoán":
                 options=[""] + danh_sach_benh
             )
 
-            if selected:
-                select.append(selected)
 
             # Nếu chọn bệnh MỚI (khác lần trước) → thêm vào text
             if selected and selected != st.session_state.da_chon:
