@@ -12,6 +12,9 @@ if BASE_DIR not in os.sys.path:
 
 from src.dataclass.schema import Input, Output, Config
 from src.functions.function import join_text, clean_text, stfr_ferritin_index, cal_mentzer, diendihst, cal_tsat, clean_phay, clean_cham
+import joblib
+from sklearn.svm import SVC
+import numpy as np
 
 class Classifier():
     def __init__(self, data, config):
@@ -134,6 +137,34 @@ class Classifier():
 
         
         return Output(diagnoses= concat_diagnoses, reasons= concat_reasons)
+    
+    def ml_classify(self):
+
+        try:
+            model = joblib.load(os.path.join(BASE_DIR, "artifacts", "SVM_best_model.pkl"))
+            print("OK")
+        except Exception as e:
+            print("LOAD FAIL:", e)
+        
+        print(type(model))
+        if self.data.gender == "Nữ":
+            gender= False
+
+        else: gender= True
+
+        data= np.array([[self.data.age, self.data.hb, self.data.rbc, self.data.pcv, self.data.mcv, self.data.mch, self.data.mchc, gender]])
+        probs= model.predict_proba(data)
+        classes = model.classes_
+
+        result = [
+            dict(zip(classes, prob))
+            for prob in probs
+        ]
+
+        return Output(diagnoses= result[0], reasons= "Dựa trên mô hình SVM đã được huấn luyện.")
+
+
+
 
 
 

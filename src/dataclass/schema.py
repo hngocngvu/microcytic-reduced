@@ -10,6 +10,7 @@ class Input():
     tri:  Optional[bool]= False
     pregnant:  Optional[bool]= False
     diet:  Optional[bool]= False
+    age: Optional[int]= None
 
     man_tinh:  Optional[bool]= False
     cancer:  Optional[bool]= False
@@ -21,6 +22,8 @@ class Input():
     mchc: Optional[float]=  None 
     rdw: Optional[float]=  None 
     ret_he: Optional[float]=  None 
+    pcv: Optional[float]= None
+    mch: Optional[float]= None
 
     fe: Optional[float]=  None 
     ferritin: Optional[float]=  None 

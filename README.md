@@ -19,3 +19,5 @@ pip install -r requirements.txt
 - Rule-based: provided by the hospital
 
 - Machine learning & Deep learning based: may develop in the future if the provided dataset is larger 
+
+

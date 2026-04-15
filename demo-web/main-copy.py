@@ -155,8 +155,13 @@ if page == "Chẩn đoán":
         mcv= parse_number(st.text_input("MCV"))
             # st.write(mcv)
 
+        pcv=  parse_number(st.text_input("PCV"))
 
         mchc= parse_number(st.text_input("MCHC"))
+            # st.write(mchc)
+
+        
+        mch= parse_number(st.text_input("MCH"))
             # st.write(mchc)
 
         rbc= parse_number(st.text_input("RBC"))
@@ -231,6 +236,7 @@ if page == "Chẩn đoán":
         tri= tri,
         pregnant= pregnant,
         diet= diet,
+        age= today.year - dob.year +1,
 
         man_tinh= man_tinh,
         cancer= cancer,
@@ -238,6 +244,8 @@ if page == "Chẩn đoán":
 
         rbc= rbc,
         hb= hb,
+        pcv= pcv,
+        mch= mch,
         mcv= mcv,
         mchc= mchc,
         rdw= rdw,
@@ -267,7 +275,10 @@ if page == "Chẩn đoán":
 
         st.subheader("Kết quả chẩn đoán")
 
-        st.success(result.diagnoses)
+        #cst.success(result.diagnoses)
+        st.write(f"Xác suất bị bệnh: {result.diagnoses[1]}")
+        st.write(f"Xác suất không bị bệnh: {result.diagnoses[0]}")
+
 
         st.subheader("Nguyên nhân và gợi ý")
 

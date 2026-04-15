@@ -1,5 +1,7 @@
 data/
 
+.vscode/ 
+
 __pycache__/
 
 note.txt
@@ -7,3 +9,6 @@ note.txt
 eda/
 
 **/.streamlit/secrets.toml
+
+*.png
+
