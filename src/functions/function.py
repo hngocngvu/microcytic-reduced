@@ -31,6 +31,7 @@ def clean_cham(text):
 def clean_phay(text):
     return text.lstrip(',').strip()
 
+"""
 def cal_mentzer(mcv, rbc):
     if rbc is None or rbc == 0:
         return None
@@ -60,7 +61,7 @@ def stfr_ferritin_index(stfr, ferritin, thres, labels):
 
 
     return diagnosis, reason
-
+"""
 
 
 def diendihst(data, thres, labels):
@@ -68,30 +69,31 @@ def diendihst(data, thres, labels):
     reason = ""
 
     if data.hbbart is not None and data.hbbart > thres["hbbart"]: 
-        diagnosis = labels[5]
+        diagnosis = labels[3]
+        reason= ""
+
+    if data.hbh is not None and data.hbh > thres["hbh"]:
+        diagnosis = labels[3]
         reason= ""
 
 
     if data.hba2 is not None and data.hba2 > thres["hba2"]:
-        diagnosis = labels[6]
+        diagnosis = labels[4]
         reason= ""
 
 
-    if (data.hb_other is not None and data.hb_other > thres["hb_other"]) or \
-        (data.hbs is not None and data.hbs > thres["hbs"]) or \
-        (data.hbe is not None and data.hbe > thres["hbe"]):
-        diagnosis = labels[0]
+    if data.hbf is not None and data.hbf > thres["hbf"]:
+        diagnosis = labels[4]
         reason= ""
 
 
-    else: 
-        reason = "Hội chẩn chuyên gia kèm tiền sử gia đình."
+    #else: 
+        #reason = "Hội chẩn chuyên gia kèm tiền sử gia đình."
 
     return diagnosis, reason
 
 
 def cal_tsat(fe, transferrin):
-    # or fe*100/tibc
     try:
         if fe is None or transferrin is None:
             return None

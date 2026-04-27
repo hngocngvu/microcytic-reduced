@@ -1,8 +1,6 @@
 import os 
 
-# mentzer= mcv/rbc
-# tsat%= fe*100%/tibc or fe*70.9/transferin
-# stfr/fer_idx= stfr/log(ferritin)
+# tsat%= fe*70.9/transferin
 
 BASE_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "..")
@@ -30,11 +28,11 @@ class Classifier():
         diagnoses= []
         tsat= 0
 
-        data.gender= clean_text(data.gender)
-        if data.gender == "nữ" and data.pregnant is True:
-            data.gender= "pregnant"
+        #data.gender= clean_text(data.gender)
+        #if data.gender == "nữ" and data.pregnant is True:
+            #data.gender= "pregnant"
 
-        FIELDS = ["mcv", "hb", "crp", "ferritin", "transferrin", "stfr", "rdw", "rbc", "dotbiengen", "hbbart", "hba2", "hb_other", "hbs", "hbe"]
+        FIELDS = ["mcv", "crp", "ferritin", "transferrin", "stfr", "rdw", "rbc", "dotbiengen", "hbbart", "hba2", "hb_other", "hbs", "hbe"]
 
         if data.fe is not None and data.transferrin is not None and data.transferrin != 0:
             tsat= cal_tsat(data.fe, data.transferrin)
@@ -42,13 +40,14 @@ class Classifier():
 
         if any(getattr(data, f) is not None for f in FIELDS):
 
+            """
             d, r= diendihst(data, thres, labels)
             diagnoses.append(d)
             reasons.append(r)
 
             if data.dotbiengen:
-                diagnoses.append(labels[0])
-                reasons.append("Phát hiện đột biến gen Thalassemia")
+                diagnoses.append("")
+                reasons.append("")
             
     
             if data.mcv is not None and data.mcv < 80: 
@@ -125,6 +124,8 @@ class Classifier():
                             d, r= diendihst(data, thres, labels)
                             diagnoses.append(d)
                             reasons.append(r)
+
+            """
 
         diagnoses= [clean_cham(d) for d in diagnoses]
         reasons = [clean_cham(r) for r in reasons]
