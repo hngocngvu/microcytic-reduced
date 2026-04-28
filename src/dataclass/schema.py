@@ -16,19 +16,19 @@ class Input():
     cancer:  Optional[bool]= False
     phau_thuat:  Optional[bool]= False
 
-    # rbc: Optional[float]= None 
-    # hb: Optional[float]=  None 
+    rbc: Optional[float]= None 
+    hb: Optional[float]=  None 
     mcv: Optional[float]=  None 
-    # mchc: Optional[float]=  None 
-    # rdw: Optional[float]=  None 
-    # ret_he: Optional[float]=  None 
+    mchc: Optional[float]=  None 
+    rdw: Optional[float]=  None 
+    ret_he: Optional[float]=  None 
     # pcv: Optional[float]= None
-    # mch: Optional[float]= None
+    mch: Optional[float]= None
 
     fe: Optional[float]=  None 
     ferritin: Optional[float]=  None 
     transferrin: Optional[float]=  None 
-    # tibc: Optional[float]=  None 
+    tibc: Optional[float]=  None 
     # stfr: Optional[float]=  None 
     crp: Optional[float]=  None 
 
@@ -37,11 +37,11 @@ class Input():
     hba2: Optional[float]=  None 
     hbf: Optional[float]=  None 
     hbh: Optional[float]=  None 
-    # hbe: Optional[float]=  None 
+    hbe: Optional[float]=  None 
     # hbc: Optional[float]=  None 
-    # hbs: Optional[float]=  None
+    hbs: Optional[float]=  None
     hbbart: Optional[float]=  None 
-    # hb_other: Optional[float]=  None 
+    hb_other: Optional[float]=  None 
 
 
 @dataclass
@@ -106,30 +106,30 @@ class DiagnosisRecord:
     cancer:  Optional[bool]= False
     phau_thuat:  Optional[bool]= False
 
-    #rbc: Optional[float]= None 
-    #hb: Optional[float]=  None 
+    rbc: Optional[float]= None 
+    hb: Optional[float]=  None 
     mcv: Optional[float]=  None 
-    #mchc: Optional[float]=  None 
-    #rdw: Optional[float]=  None 
-    #ret_he: Optional[float]=  None 
+    mchc: Optional[float]=  None 
+    rdw: Optional[float]=  None 
+    ret_he: Optional[float]=  None 
 
     fe: Optional[float]=  None 
     ferritin: Optional[float]=  None 
     transferrin: Optional[float]=  None 
-    #tibc: Optional[float]=  None 
+    tibc: Optional[float]=  None 
     #stfr: Optional[float]=  None 
     crp: Optional[float]=  None 
 
     dotbiengen: Optional[bool]= False
-    #hba: Optional[float]=  None 
+    hba: Optional[float]=  None 
     hba2: Optional[float]=  None 
     hbf: Optional[float]=  None 
     hbh: Optional[float]=  None 
-    #hbe: Optional[float]=  None 
+    hbe: Optional[float]=  None 
     #hbc: Optional[float]=  None 
-    #hbs: Optional[float]=  None
+    hbs: Optional[float]=  None
     hbbart: Optional[float]=  None 
-    #hb_other: Optional[float]=  None 
+    hb_other: Optional[float]=  None 
 
 
     diagnoses: Optional[str]= None

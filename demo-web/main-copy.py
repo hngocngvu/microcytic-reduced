@@ -12,7 +12,7 @@ if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
 
-from src.dataclass.schema import Input, Output, Config
+from src.dataclass.schema import Input, Config
 from src.models.classifier import Classifier
 from src.functions.function import parse_number 
 from src.functions.utils import export_excel, export_word, export_pdf 
@@ -270,14 +270,14 @@ if page == "Chẩn đoán":
         hbbart= hbbart,
         hb_other= hb_other,)
 
+
         c= Classifier(patient, config)
         result= c.ml_classify()
 
         st.subheader("Kết quả chẩn đoán")
 
-        #cst.success(result.diagnoses)
-        st.write(f"Xác suất bị bệnh: {result.diagnoses[1]}")
-        st.write(f"Xác suất không bị bệnh: {result.diagnoses[0]}")
+        #st.success(result.diagnoses)
+        st.info(result.diagnoses)
 
 
         st.subheader("Nguyên nhân và gợi ý")

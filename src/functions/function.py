@@ -1,13 +1,10 @@
 import os
-from typing import Dict, List, Optional, Tuple
 
 BASE_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "..")
 )
 if BASE_DIR not in os.sys.path:
     os.sys.path.append(BASE_DIR)
-
-import math
 
 def join_text(texts):
     return ", ".join(texts)

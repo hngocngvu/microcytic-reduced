@@ -9,7 +9,7 @@ from sklearn.model_selection import (
     cross_val_score,
     GridSearchCV,
     RandomizedSearchCV,
-    StratifiedKFold
+    KFold
 )
 from sklearn.metrics import accuracy_score, f1_score, classification_report
 import time
@@ -20,8 +20,10 @@ from sklearn.model_selection import train_test_split
 import shap
 import os
 import matplotlib.pyplot as plt
+from sklearn.multioutput import MultiOutputClassifier
+from sklearn.metrics import make_scorer, f1_score
+from sklearn.preprocessing import LabelEncoder
 
-# Fix LightGBM cho no chay nhanh hon
 
 def print_result(result):
     print(f"Best params: {result['best_params']}")
@@ -35,57 +37,72 @@ def print_result(result):
 
     print(f"Saved model    : {result['saved_model']}")
 
+
 models_config = {
     "RF": {
-        "model": RandomForestClassifier(random_state=42),
+        "model": MultiOutputClassifier(
+            RandomForestClassifier(random_state=42)
+        ),
         "params": {
-            "n_estimators": [100, 200],
-            "max_depth": [5, 10, None]
+            "estimator__n_estimators": [100, 200],
+            "estimator__max_depth": [5, 10, None]
         }
     },
 
     "XGBoost": {
-        "model": XGBClassifier(eval_metric='mlogloss', random_state=42),
+        "model": MultiOutputClassifier(
+            XGBClassifier(eval_metric='logloss', random_state=42)
+        ),
         "params": {
-            "n_estimators": [100, 200],
-            "learning_rate": [0.05, 0.1],
-            "max_depth": [3, 5]
+            "estimator__n_estimators": [100, 200],
+            "estimator__learning_rate": [0.05, 0.1],
+            "estimator__max_depth": [3, 5]
         }
     },
 
     "LightGBM": {
-        "model": LGBMClassifier(random_state=42),
+        "model": MultiOutputClassifier(
+            LGBMClassifier(random_state=42)
+        ),
         "params": {
-            "n_estimators": [100],
-            "learning_rate": [0.05],
-            "max_depth": [-1, 5]
+            "estimator__n_estimators": [100],
+            "estimator__learning_rate": [0.05],
+            "estimator__max_depth": [-1, 5]
         }
     },
 
     "LR": {
-        "model": LogisticRegression(max_iter=1000),
+        "model": MultiOutputClassifier(
+            LogisticRegression(max_iter=1000)
+        ),
         "params": {
-            "C": [0.1, 1, 10]
+            "estimator__C": [0.1, 1, 10]
         }
     },
 
     "SVM": {
-        "model": SVC(probability=True),
+        "model": MultiOutputClassifier(
+            SVC(probability=True)
+        ),
         "params": {
-            "C": [0.1, 1, 10],
-            "kernel": ["rbf"]
+            "estimator__C": [0.1, 1, 10],
+            "estimator__kernel": ["rbf"]
         }
     },
 
     "KNN": {
-        "model": KNeighborsClassifier(),
+        "model": MultiOutputClassifier(
+            KNeighborsClassifier()
+        ),
         "params": {
-            "n_neighbors": [3, 5, 7]
+            "estimator__n_neighbors": [3, 5, 7]
         }
     },
 
     "NaiveBayes": {
-        "model": GaussianNB(),
+        "model": MultiOutputClassifier(
+            GaussianNB()
+        ),
         "params": {}
     }
 }
@@ -106,12 +123,9 @@ class ModelFactory():
     def train_and_evaluate(self, X_train, y_train, X_test, y_test):
         model, param_grid = self.get_model()
         start_time = time.time()
-        
-        # Sử dụng StratifiedKFold để đảm bảo phân phối lớp đồng đều trong mỗi fold
-        # hyper-params tuning: RandomizedSearchCV cho các model có nhiều hyper-params (RF, XGBoost, LightGBM) để tiết kiệm thời gian
-        # còn lại sẽ dùng GridSearchCV hoặc fit trực tiếp nếu không có hyper-params nào cần tuning
 
-        cv_strategy = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
+        cv_strategy = KFold(n_splits=3, shuffle=True, random_state=42)
+        scorer = make_scorer(f1_score, average='macro')
         
         if param_grid:
             if self.model_name in ["LightGBM", "XGBoost", "RF"]:
@@ -120,43 +134,40 @@ class ModelFactory():
                     param_distributions=param_grid,
                     n_iter=5,
                     cv=cv_strategy,
-                    scoring='f1_macro',
+                    scoring=scorer,
                     n_jobs=-1,
                     random_state=42,
-                    return_train_score=True  # Để lấy thêm thông tin
+                    return_train_score=True
                 )
             else:
                 search = GridSearchCV(
                     model,
                     param_grid,
                     cv=cv_strategy,
-                    scoring='f1_macro',
+                    scoring=scorer,
                     n_jobs=-1,
                     return_train_score=True
                 )
             
-            # search.fit(): CV + fit trên toàn bộ training set với best hyper-params để deploy
             search.fit(X_train, y_train)
             best_model = search.best_estimator_
             best_params = search.best_params_
             
-            cv_mean_f1 = search.best_score_  
+            cv_mean_f1 = search.best_score_
             cv_std_f1 = search.cv_results_['std_test_score'][search.best_index_]
             
         else:
-            # k-cross validation để đánh giá
             cv_scores = cross_val_score(
                 model,
                 X_train,
                 y_train,
                 cv=cv_strategy,
-                scoring='f1_macro',
+                scoring=scorer,
                 n_jobs=-1
             )
             cv_mean_f1 = cv_scores.mean()
             cv_std_f1 = cv_scores.std()
             
-            # fit trên toàn bộ training set để deploy
             model.fit(X_train, y_train)
             best_model = model
             best_params = "default"
@@ -164,10 +175,15 @@ class ModelFactory():
         end_time = time.time()
         training_time = end_time - start_time
         
-        # Đánh giá trên test set
+        # Predict
         y_pred = best_model.predict(X_test)
         
-        # Lưu model
+        # Metrics
+        acc = accuracy_score(y_test, y_pred)
+        f1_macro = f1_score(y_test, y_pred, average='macro')
+        f1_micro = f1_score(y_test, y_pred, average='micro')
+        
+        # Save model
         model_filename = f"{self.model_name}_best_model.pkl"
         model_filepath = f"artifacts/{model_filename}"
         joblib.dump(best_model, model_filepath)
@@ -176,52 +192,89 @@ class ModelFactory():
             "model_name": self.model_name,
             "best_model": best_model,
             "best_params": best_params,
-            "accuracy": accuracy_score(y_test, y_pred),
-            "f1_macro": f1_score(y_test, y_pred, average='macro'),
+            "accuracy": acc,
+            "f1_macro": f1_macro,
+            "f1_micro": f1_micro,
             "cv_mean_f1": cv_mean_f1,
-            "cv_std_f1": cv_std_f1,  
+            "cv_std_f1": cv_std_f1,
             "training_time_sec": training_time,
-            "report": classification_report(y_test, y_pred, digits=4),
+            "report": classification_report(y_test, y_pred, target_names=["ACD", "IDA", "Thal"], digits=4),
             "saved_model": model_filename
         }
     
     def explain_with_shap(self, X_test, feature_names, save_dir="notebooks/eda/shap"):
-        
-        if self.model_name not in ["RF", "XGBoost", "LightGBM"]:
-            print("SHAP only supports tree-based models.")
-            return
+            """
+            Generate SHAP explanations for tree-based models.
+            For MultiOutputClassifier, we explain each output separately.
+            """
+            
+            if self.model_name not in ["RF", "XGBoost", "LightGBM"]:
+                print(f"SHAP explanation skipped: {self.model_name} is not a tree-based model.")
+                return
+    
+            os.makedirs(save_dir, exist_ok=True)
+    
+            # Load the trained model
+            model = joblib.load(f"artifacts/{self.model_name}_best_model.pkl")
+            
+            # For MultiOutputClassifier, we need to explain each estimator separately
+            output_names = [f"{self.model_name}_ACD", f"{self.model_name}_IDA", f"{self.model_name}_Thal"]  # Update based on your targets
+            
+            for i, (estimator, output_name) in enumerate(zip(model.estimators_, output_names)):
+                print(f"\nGenerating SHAP explanations for output: {output_name}")
+                
+                try:
+                    # Create TreeExplainer for individual estimator
+                    explainer = shap.TreeExplainer(estimator)
+                    shap_values = explainer.shap_values(X_test)
+                    
+                    # Summary plot
+                    plt.figure(figsize=(10, 6))
+                    shap.summary_plot(
+                        shap_values,
+                        X_test,
+                        feature_names=feature_names,
+                        show=False
+                    )
+                    plt.title(f"SHAP Summary - {output_name}")
+                    output_file = f"{save_dir}/summary_plot_{output_name}.png"
+                    plt.savefig(output_file, bbox_inches="tight", dpi=300)
+                    plt.close()
+                    print(f"  Saved: {output_file}")
+                    
+                    # Feature importance plot
+                    plt.figure(figsize=(10, 6))
+                    shap.summary_plot(
+                        shap_values,
+                        X_test,
+                        feature_names=feature_names,
+                        plot_type="bar",
+                        show=False
+                    )
+                    plt.title(f"SHAP Feature Importance - {output_name}")
+                    output_file = f"{save_dir}/feature_importance_{output_name}.png"
+                    plt.savefig(output_file, bbox_inches="tight", dpi=300)
+                    plt.close()
+                    print(f"  Saved: {output_file}")
+                    
+                except Exception as e:
+                    print(f"  Error generating SHAP plots for {output_name}: {str(e)}")
+            
+            print(f"\nSHAP analysis complete. Plots saved to {save_dir}/")
+            
+            """
+            shap.initjs()
 
-        os.makedirs(save_dir, exist_ok=True)
+            force_plot = shap.force_plot(
+                explainer.expected_value,
+                shap_values.values[0],
+                X_test.iloc[0]
+            )
 
-        model = joblib.load(f"artifacts/{self.model_name}_best_model.pkl")
+            shap.save_html(f"{save_dir}/force_plot_sample0.html", force_plot)
 
-        explainer = shap.TreeExplainer(model)
-        shap_values = explainer(X_test)
-
-
-        plt.figure()
-        shap.summary_plot(
-            shap_values,
-            X_test,
-            feature_names=feature_names,
-            show=False
-        )
-        plt.savefig(f"{save_dir}/summary_plot.png", bbox_inches="tight", dpi=300)
-        plt.close()
-
-        """
-        shap.initjs()
-
-        force_plot = shap.force_plot(
-            explainer.expected_value,
-            shap_values.values[0],
-            X_test.iloc[0]
-        )
-
-        shap.save_html(f"{save_dir}/force_plot_sample0.html", force_plot)
-
-        print(f"SHAP plots saved to {save_dir}")
-        """
+            print(f"SHAP plots saved to {save_dir}")
+            """
     
 
 if __name__ == "__main__":
@@ -239,19 +292,22 @@ if __name__ == "__main__":
     args = parser.parse_args()
     model_name = args.model_name
 
-    df = pd.read_excel("data/anemia-data.xlsx")
-    df = pd.get_dummies(df, columns=["Gender"], drop_first=True)
+    # df = pd.read_excel("data/anemia-data.xlsx")
+    df= pd.read_csv("data/concat.csv")
+    df = pd.get_dummies(df, columns=["Giới"], drop_first=True)
     
     print(df.head())
 
-    df = df.apply(pd.to_numeric, errors='coerce')
+    #df = df.apply(pd.to_numeric, errors='coerce')
 
-    X = df.drop(columns=["Decision_Class"])
-    y = df["Decision_Class"]
+    X = df.drop(columns=["ACD", "IDA", "Thal"])
+    y = df[["ACD", "IDA", "Thal"]]
 
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42, stratify=y 
+        X, y, test_size=0.2, random_state=42, stratify=y
     )
+    df_test = df.loc[X_test.index]
+    df_test.to_csv("data/test_data.csv", index=False)
 
     factory = ModelFactory(model_name)
     results = factory.train_and_evaluate(X_train, y_train, X_test, y_test)

@@ -8,10 +8,11 @@ BASE_DIR = os.path.abspath(
 if BASE_DIR not in os.sys.path:
     os.sys.path.append(BASE_DIR)
 
-from src.dataclass.schema import Input, Output, Config
-from src.functions.function import join_text, clean_text, stfr_ferritin_index, cal_mentzer, diendihst, cal_tsat, clean_phay, clean_cham
+from src.dataclass.schema import Output
+# from src.functions.function import join_text, clean_text, stfr_ferritin_index, cal_mentzer, diendihst, cal_tsat, clean_phay, clean_cham
+from src.functions.function import join_text, cal_tsat, clean_phay, clean_cham
+
 import joblib
-from sklearn.svm import SVC
 import numpy as np
 
 class Classifier():
@@ -142,27 +143,57 @@ class Classifier():
     def ml_classify(self):
 
         try:
-            model = joblib.load(os.path.join(BASE_DIR, "artifacts", "SVM_best_model.pkl"))
-            print("OK")
+            model = joblib.load(os.path.join(BASE_DIR, "artifacts", "XGBoost_best_model.pkl"))
         except Exception as e:
             print("LOAD FAIL:", e)
-        
-        print(type(model))
-        if self.data.gender == "Nữ":
-            gender= False
+            return None
 
-        else: gender= True
+        # encode gender
+        gender = 0 if self.data.gender == "Nữ" else 1
 
-        data= np.array([[self.data.age, self.data.hb, self.data.rbc, self.data.pcv, self.data.mcv, self.data.mch, self.data.mchc, gender]])
-        probs= model.predict_proba(data)
-        classes = model.classes_
+        data = np.array([[
+            self.data.age,
+            self.data.man_tinh,
+            self.data.rbc,
+            self.data.hb,
+            self.data.mcv,
+            self.data.mchc,
+            self.data.rdw,
+            self.data.fe,
+            self.data.ferritin,
+            self.data.transferin,
+            self.data.tibc,
+            self.data.crp,
+            self.data.ret_he,
+            self.data.hba,
+            self.data.hba2,
+            self.data.hbf,
+            self.data.hbh,
+            self.data.hbbart,
+            self.data.hbs,
+            self.data.hbe,
+            self.data.hb_other,
+            self.data.dotbiengen,
+            self.data.tsat,
+            self.data.mch,
+            gender
+        ]])
 
-        result = [
-            dict(zip(classes, prob))
-            for prob in probs
-        ]
+        # predict
+        probs = model.predict_proba(data)
 
-        return Output(diagnoses= result[0], reasons= "Dựa trên mô hình SVM đã được huấn luyện.")
+        labels = ["ACD", "IDA", "Thal"]
+
+        result = {}
+
+        for i, label in enumerate(labels):
+            prob_1 = probs[i][0][1]  # xác suất class = 1
+            result[label] = float(prob_1)
+
+        return Output(
+            diagnoses=result,
+            reasons="Dựa trên mô hình XGBoost multi-label."
+        )
 
 
 
