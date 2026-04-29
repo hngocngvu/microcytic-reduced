@@ -30,10 +30,11 @@ class Input():
     transferrin: Optional[float]=  None 
     tibc: Optional[float]=  None 
     # stfr: Optional[float]=  None 
+    tsat: Optional[float]=  None
     crp: Optional[float]=  None 
 
     dotbiengen: Optional[bool]= False
-    # hba: Optional[float]=  None 
+    hba: Optional[float]=  None 
     hba2: Optional[float]=  None 
     hbf: Optional[float]=  None 
     hbh: Optional[float]=  None 

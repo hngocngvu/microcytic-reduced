@@ -37,7 +37,7 @@ class Classifier():
 
         if data.fe is not None and data.transferrin is not None and data.transferrin != 0:
             tsat= cal_tsat(data.fe, data.transferrin)
-            mentzer= cal_mentzer(data.mcv, data.rbc)
+            # mentzer= cal_mentzer(data.mcv, data.rbc)
 
         if any(getattr(data, f) is not None for f in FIELDS):
 
@@ -161,7 +161,7 @@ class Classifier():
             self.data.rdw,
             self.data.fe,
             self.data.ferritin,
-            self.data.transferin,
+            self.data.transferrin,
             self.data.tibc,
             self.data.crp,
             self.data.ret_he,
@@ -188,7 +188,7 @@ class Classifier():
 
         for i, label in enumerate(labels):
             prob_1 = probs[i][0][1]  # xác suất class = 1
-            result[label] = float(prob_1)
+            result[label] = f"{float(prob_1) * 100:.2f}%"
 
         return Output(
             diagnoses=result,

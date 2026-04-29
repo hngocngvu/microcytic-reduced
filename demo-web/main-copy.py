@@ -22,6 +22,18 @@ import datetime
 
 today = datetime.date.today()
 
+def input_field(label, key):
+    val = st.text_input(label, value=str(st.session_state.patient.get(key, "")))
+    try:
+        val = float(val)
+    except:
+        val = None
+    st.session_state.patient[key] = val
+    return val
+
+if "patient" not in st.session_state:
+    st.session_state.patient = {}
+
 page = st.sidebar.selectbox(
     "Menu",
     ["Chẩn đoán", "Tìm kiếm bệnh nhân", "Xuất báo cáo"]
@@ -35,7 +47,37 @@ if page == "Chẩn đoán":
         unsafe_allow_html=True
     )
 
+    file= st.file_uploader("Tải file CSV", type= ["csv"])
 
+    if file is not None:
+        df= pd.read_csv(file)
+        row= df.iloc[0]
+
+        st.session_state.patient.update({
+                "gender": "Nữ" if row["Giới_Nữ"] == 1 else "Nam",
+                "age": row["Tuổi"],
+                "hb": row["Hb"],
+                "mcv": row["MCV"],
+                "mchc": row["MCHC"],
+                "rbc": row["RBC"],
+                "rdw": row["RDW-CV"],
+                "ret_he": row["Ret-He"],
+                "fe": row["Fe"],    
+                "ferritin": row["Ferritin"],
+                "transferrin": row["Transferin"],
+                "tibc": row["TIBC"],
+                "crp": row["CRP"],
+                "hba": row["HbA1"],
+                "hba2": row["HbA2"],
+                "hbf": row["HbF"],
+                "hbh": row["HbH"],
+                "hb_other": row["Hb khác"],
+                "dotbiengen": row["Đột biến gen thalassemia"],
+                "tsat": row["TSAT (%)"],
+                "mch": row["MCH"],
+            })
+
+        st.success("Đã load file CSV!")
 
     c1, c2, c3 = st.columns(3)
 
@@ -46,8 +88,10 @@ if page == "Chẩn đoán":
         max_value=datetime.date.today())
         gender = st.radio(
         "Giới tính",
-        ["Nam", "Nữ","Khác"]
-            )
+        ["Nam", "Nữ","Khác"])
+        
+        st.session_state.patient["gender"]= gender
+
         if gender == "Nam":
             kinh_nguyet = False
             pregnant = False
@@ -61,7 +105,6 @@ if page == "Chẩn đoán":
         record_id= st.text_input("Mã số hồ sơ")
 
     dob_str = dob.isoformat()
-
 
     col1, col2, col3, col4 = st.columns(4)
 
@@ -149,88 +192,90 @@ if page == "Chẩn đoán":
 
     with col2:
         st.subheader("Các đặc điểm hồng cầu")
-        hb= parse_number(st.text_input("Hemoglobin (Hb)"))
+        hb= input_field("Hb", "hb")
             # st.write(hb)
 
-        mcv= parse_number(st.text_input("MCV"))
+        mcv= input_field("MCV", "mcv")
             # st.write(mcv)
 
-        pcv=  parse_number(st.text_input("PCV"))
+        #pcv=  parse_number(st.text_input("PCV"))
 
-        mchc= parse_number(st.text_input("MCHC"))
+        mchc= input_field("MCHC", "mchc")
             # st.write(mchc)
 
         
-        mch= parse_number(st.text_input("MCH"))
+        mch= input_field("MCH", "mch")
             # st.write(mchc)
 
-        rbc= parse_number(st.text_input("RBC"))
+        rbc= input_field("RBC", "rbc")
             # st.write(rbc)
 
-        rdw= parse_number(st.text_input("RDW-CV"))
+        rdw= input_field("RDW-CV", "rdw")
             # st.write(rdw)
 
-        ret_he= parse_number(st.text_input("Ret-He"))
+        ret_he= input_field("Ret-He", "ret_he")
             # st.write(ret_he)
 
     with col3: 
         st.subheader("Chỉ số hóa sinh máu")
-        fe= parse_number(st.text_input("Định lượng Sắt huyết thanh (Fe)"))
+        fe= input_field("Fe", "fe")
             # st.write(fe)
 
-        ferritin= parse_number(st.text_input("Định lượng Ferritin"))
+        ferritin= input_field("Ferritin", "ferritin")
             # st.write(ferritin)
 
-        transferrin= parse_number(st.text_input("Định lượng Transferrin"))
+        transferrin= input_field("Transferrin", "transferrin")
             # st.write(transferrin)
 
-        tibc= parse_number(st.text_input("TIBC (khả năng gắn sắt toàn phần: máy đo)"))
+        tibc= input_field("TIBC", "tibc")
             # st.write(tibc)
 
-        stfr= parse_number(st.text_input("Nồng độ thụ thể transferrin hòa tan"))    
+        # stfr= parse_number(st.text_input("Nồng độ thụ thể transferrin hòa tan"))    
             # st.write(stfr)
 
-        crp= parse_number(st.text_input("CRP"))
+        crp= input_field("CRP", "crp")
             # st.write(crp)
 
     with col4: 
         st.subheader("Xét nghiệm di huyết sắt tố và đột biến gen")
-        hba= parse_number(st.text_input("HbA"))
+        hba= input_field("HbA1", "hba")
             # st.write(hba)
 
-        hba2= parse_number(st.text_input("HbA2"))
+        hba2= input_field("HbA2", "hba2")
             # st.write(hba2)
 
-        hbf= parse_number(st.text_input("HbF"))
+        hbf= input_field("HbF", "hbf")
             # st.write(hbf)
 
-        hbh= parse_number(st.text_input("HbH"))
+        hbh= input_field("HbH", "hbh")
             # st.write(hbh)
 
-        hbe= parse_number(st.text_input("HbE"))
+        hbe= input_field("HbE", "hbe")
             # st.write(hbe)
 
-        hbc= parse_number(st.text_input("HbC"))
+        # hbc= input_field("HbC", "hbc")
             # st.write(hbc)
 
-        hbs= parse_number(st.text_input("HbS"))
+        hbs= input_field("HbS", "hbs")
             # st.write(hbs)
 
-        hbbart= parse_number(st.text_input("Hb Bart"))
+        hbbart= input_field("Hb Bart", "hbbart")
             # st.write(hbbart)
 
-        hb_other= parse_number(st.text_input("Chỉ số Hb khác nếu có"))
+        hb_other= input_field("Chỉ số Hb khác nếu có", "hb_other")
             # st.write(hb_other)
 
-        dotbiengen= st.checkbox("Đột biến gen thalassemia")
+        dotbiengen= st.checkbox("Đột biến gen thalassemia", value= st.session_state.patient.get("dotbiengen", False))
             # st.write(dotbiengen)
 
     submitted = st.button("Submit", use_container_width=True, type="primary")
+
                                         
     if submitted:
+        p= st.session_state.patient
         config= Config()
 
-        patient= Input(gender,
+        patient= Input(gender= p.get("gender"),
         kinh_nguyet= kinh_nguyet,
         da_day= da_day,
         tri= tri,
@@ -242,33 +287,34 @@ if page == "Chẩn đoán":
         cancer= cancer,
         phau_thuat= phau_thuat,
 
-        rbc= rbc,
-        hb= hb,
-        pcv= pcv,
-        mch= mch,
-        mcv= mcv,
-        mchc= mchc,
-        rdw= rdw,
-        ret_he= ret_he,
+        rbc= p.get("rbc"),
+        hb= p.get("hb"),
+        #pcv= pcv,
+        mch= p.get("mch"),
+        mcv= p.get("mcv"),
+        mchc= p.get("mchc"),
+        rdw= p.get("rdw"),
+        ret_he= p.get("ret_he"),
 
 
-        fe=fe,
-        ferritin= ferritin,
-        transferrin= transferrin,
-        tibc= tibc,
-        stfr= stfr,
-        crp= crp,
+        fe= p.get("fe"),
+        ferritin= p.get("ferritin"),
+        transferrin= p.get("transferrin"),
+        tibc= p.get("tibc"),
+        # stfr= stfr,
+        crp= p.get("crp"),
+        tsat= p.get("tsat"),
 
-        dotbiengen= dotbiengen,
-        hba= hba,
-        hba2= hba2,
-        hbf= hbf,
-        hbh= hbh,
-        hbe= hbe, 
-        hbc= hbc,
-        hbs= hbs,
-        hbbart= hbbart,
-        hb_other= hb_other,)
+        dotbiengen= p.get("dotbiengen"),
+        hba= p.get("hba"),
+        hba2= p.get("hba2"),
+        hbf= p.get("hbf"),
+        hbh= p.get("hbh"),
+        hbe= p.get("hbe"), 
+        # hbc= hbc,
+        hbs= p.get("hbs"),
+        hbbart= p.get("hbbart"),
+        hb_other= p.get("hb_other"),)
 
 
         c= Classifier(patient, config)
@@ -295,8 +341,10 @@ if page == "Chẩn đoán":
                 man_tinh= man_tinh, cancer= cancer, phau_thuat= phau_thuat,
                 rbc= rbc, hb=hb, mcv= mcv, mchc= mchc, rdw= rdw, ret_he= ret_he,
                 fe= fe, ferritin= ferritin, transferrin= transferrin,
-                tibc= tibc, stfr= stfr, crp= crp, dotbiengen= dotbiengen,
-                hba= hba, hba2= hba2, hbf= hbf, hbh= hbh, hbe= hbe, hbc= hbc,
+                tibc= tibc, #stfr= stfr,
+                crp= crp, dotbiengen= dotbiengen,
+                hba= hba, hba2= hba2, hbf= hbf, hbh= hbh, hbe= hbe, 
+                #hbc= hbc,
                 hbs= hbs, hbbart= hbbart, hb_other= hb_other, 
                 diagnoses= result.diagnoses, reasons= result.reasons
             )
