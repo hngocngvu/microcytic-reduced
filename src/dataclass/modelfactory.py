@@ -194,7 +194,7 @@ class ModelFactory():
             "saved_model": model_filename
         }
     
-    def explain_with_shap(self, X_test, feature_names, trained_model, save_dir="notebooks/eda/shap"):
+    def explain_with_shap(self, X_test, feature_names, trained_model, save_dir="notebooks/png"):
             """
             Generate SHAP explanations for tree-based models.
             For MultiOutputClassifier, we explain each output separately.

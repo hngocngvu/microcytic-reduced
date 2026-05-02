@@ -30,7 +30,6 @@ if __name__ == "__main__":
 
     # df = pd.read_excel("data/anemia-data.xlsx")
     df= pd.read_csv("data/concat.csv")
-    df = pd.get_dummies(df, columns=["Giới"], drop_first=True)
     
     print(df.head())
 
