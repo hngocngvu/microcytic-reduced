@@ -1,10 +1,26 @@
 import os
 
+"""
 BASE_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "..")
 )
 if BASE_DIR not in os.sys.path:
     os.sys.path.append(BASE_DIR)
+"""
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.multioutput import MultiOutputClassifier
+
+def make_pipeline(model, use_scaler= False):
+    if use_scaler:
+        return Pipeline([
+            ("scaler", StandardScaler()),
+            ("clf", MultiOutputClassifier(model))
+        ])
+    else:
+        return Pipeline([
+            ("clf", MultiOutputClassifier(model))
+        ])
 
 def join_text(texts):
     return ", ".join(texts)
@@ -100,6 +116,18 @@ def cal_tsat(fe, transferrin):
     except:
         return None
 
+
+def print_result(result):
+    print(f"Best params: {result['best_params']}")
+    print(f"Accuracy: {result['accuracy']:.4f}")
+    print(f"F1-macro: {result['f1_macro']:.4f}")
+    print(f"CV F1: {float(result['cv_mean_f1']):.4f} ± {float(result['cv_std_f1']):.4f}")
+    print(f"Training time: {result['training_time_sec']:.2f} sec")
+
+    print("\nClassification Report:\n")
+    print(result["report"])
+
+    print(f"Saved model    : {result['saved_model']}")
 
 
 
