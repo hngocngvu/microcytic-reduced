@@ -38,71 +38,96 @@ def print_result(result):
     print(f"Saved model    : {result['saved_model']}")
 
 
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
 models_config = {
+
     "RF": {
-        "model": MultiOutputClassifier(
-            RandomForestClassifier(random_state=42)
-        ),
+        "model": Pipeline([
+            ("scaler", StandardScaler()),
+            ("clf", MultiOutputClassifier(
+                RandomForestClassifier(random_state=42)
+            ))
+        ]),
         "params": {
-            "estimator__n_estimators": [100, 200],
-            "estimator__max_depth": [5, 10, None]
+            "clf__estimator__n_estimators": [100, 200],
+            "clf__estimator__max_depth": [5, 10, None]
         }
     },
 
     "XGBoost": {
-        "model": MultiOutputClassifier(
-            XGBClassifier(eval_metric='logloss', random_state=42)
-        ),
+        "model": Pipeline([
+            ("scaler", StandardScaler()),
+            ("clf", MultiOutputClassifier(
+                XGBClassifier(eval_metric='logloss', random_state=42)
+            ))
+        ]),
         "params": {
-            "estimator__n_estimators": [100, 200],
-            "estimator__learning_rate": [0.05, 0.1],
-            "estimator__max_depth": [3, 5]
+            "clf__estimator__n_estimators": [100, 200],
+            "clf__estimator__learning_rate": [0.05, 0.1],
+            "clf__estimator__max_depth": [3, 5]
         }
     },
 
     "LightGBM": {
-        "model": MultiOutputClassifier(
-            LGBMClassifier(random_state=42)
-        ),
+        "model": Pipeline([
+            ("scaler", StandardScaler()),
+            ("clf", MultiOutputClassifier(
+                LGBMClassifier(random_state=42)
+            ))
+        ]),
         "params": {
-            "estimator__n_estimators": [100],
-            "estimator__learning_rate": [0.05],
-            "estimator__max_depth": [-1, 5]
+            "clf__estimator__n_estimators": [100],
+            "clf__estimator__learning_rate": [0.05],
+            "clf__estimator__max_depth": [-1, 5]
         }
     },
 
     "LR": {
-        "model": MultiOutputClassifier(
-            LogisticRegression(max_iter=1000)
-        ),
+        "model": Pipeline([
+            ("scaler", StandardScaler()),
+            ("clf", MultiOutputClassifier(
+                LogisticRegression(max_iter=1000)
+            ))
+        ]),
         "params": {
-            "estimator__C": [0.1, 1, 10]
+            "clf__estimator__C": [0.1, 1, 10]
         }
     },
 
     "SVM": {
-        "model": MultiOutputClassifier(
-            SVC(probability=True)
-        ),
+        "model": Pipeline([
+            ("scaler", StandardScaler()),
+            ("clf", MultiOutputClassifier(
+                SVC(probability=True)
+            ))
+        ]),
         "params": {
-            "estimator__C": [0.1, 1, 10],
-            "estimator__kernel": ["rbf"]
+            "clf__estimator__C": [0.1, 1, 10],
+            "clf__estimator__kernel": ["rbf"]
         }
     },
 
     "KNN": {
-        "model": MultiOutputClassifier(
-            KNeighborsClassifier()
-        ),
+        "model": Pipeline([
+            ("scaler", StandardScaler()),
+            ("clf", MultiOutputClassifier(
+                KNeighborsClassifier()
+            ))
+        ]),
         "params": {
-            "estimator__n_neighbors": [3, 5, 7]
+            "clf__estimator__n_neighbors": [3, 5, 7]
         }
     },
 
     "NaiveBayes": {
-        "model": MultiOutputClassifier(
-            GaussianNB()
-        ),
+        "model": Pipeline([
+            ("scaler", StandardScaler()),
+            ("clf", MultiOutputClassifier(
+                GaussianNB()
+            ))
+        ]),
         "params": {}
     }
 }
@@ -137,7 +162,8 @@ class ModelFactory():
                     scoring=scorer,
                     n_jobs=-1,
                     random_state=42,
-                    return_train_score=True
+                    return_train_score=True,
+                    verbose= 0
                 )
             else:
                 search = GridSearchCV(
@@ -146,7 +172,8 @@ class ModelFactory():
                     cv=cv_strategy,
                     scoring=scorer,
                     n_jobs=-1,
-                    return_train_score=True
+                    return_train_score=True,
+                    verbose= 0
                 )
             
             search.fit(X_train, y_train)
@@ -202,7 +229,7 @@ class ModelFactory():
             "saved_model": model_filename
         }
     
-    def explain_with_shap(self, X_test, feature_names, save_dir="notebooks/eda/shap"):
+    def explain_with_shap(self, X_test, feature_names, trained_model, save_dir="notebooks/eda/shap"):
             """
             Generate SHAP explanations for tree-based models.
             For MultiOutputClassifier, we explain each output separately.
@@ -213,48 +240,63 @@ class ModelFactory():
                 return
     
             os.makedirs(save_dir, exist_ok=True)
-    
+
+            model= trained_model 
             # Load the trained model
-            model = joblib.load(f"artifacts/{self.model_name}_best_model.pkl")
             
             # For MultiOutputClassifier, we need to explain each estimator separately
             output_names = [f"{self.model_name}_ACD", f"{self.model_name}_IDA", f"{self.model_name}_Thal"]  # Update based on your targets
+
+            multi_output_model = model.named_steps["clf"]
+
+            X_test_array = X_test.values if hasattr(X_test, 'values') else X_test
+            scaler= model.named_steps["scaler"]
+            X_test_scaled = scaler.transform(X_test_array)
+
             
-            for i, (estimator, output_name) in enumerate(zip(model.estimators_, output_names)):
+            for i, (estimator, output_name) in enumerate(zip(multi_output_model.estimators_, output_names)):
                 print(f"\nGenerating SHAP explanations for output: {output_name}")
                 
                 try:
                     # Create TreeExplainer for individual estimator
                     explainer = shap.TreeExplainer(estimator)
-                    shap_values = explainer.shap_values(X_test)
+                    shap_values = explainer.shap_values(X_test_scaled)
+
+                    # For binary classification, shap_values might be a 2D array
+                    # For multiclass, it's a list of arrays
+                    if isinstance(shap_values, list):
+                        # Multiclass case - use class 1 (positive class)
+                        shap_vals_to_plot = shap_values[1] if len(shap_values) > 1 else shap_values[0]
+                    else:
+                        shap_vals_to_plot = shap_values
+
                     
                     # Summary plot
-                    plt.figure(figsize=(10, 6))
+                    
+                    plt.figure(figsize=(12, 8))
                     shap.summary_plot(
-                        shap_values,
-                        X_test,
+                        shap_vals_to_plot,
+                        X_test_scaled,
                         feature_names=feature_names,
                         show=False
                     )
-                    plt.title(f"SHAP Summary - {output_name}")
+                    plt.title(f"SHAP Summary - {output_name}", fontsize= 14)
                     output_file = f"{save_dir}/summary_plot_{output_name}.png"
                     plt.savefig(output_file, bbox_inches="tight", dpi=300)
-                    plt.close()
                     print(f"  Saved: {output_file}")
                     
                     # Feature importance plot
-                    plt.figure(figsize=(10, 6))
+                    plt.figure(figsize=(12, 8))
                     shap.summary_plot(
-                        shap_values,
-                        X_test,
+                        shap_vals_to_plot,
+                        X_test_scaled,
                         feature_names=feature_names,
                         plot_type="bar",
                         show=False
                     )
-                    plt.title(f"SHAP Feature Importance - {output_name}")
+                    plt.title(f"SHAP Feature Importance - {output_name}", fontsize= 14)
                     output_file = f"{save_dir}/feature_importance_{output_name}.png"
                     plt.savefig(output_file, bbox_inches="tight", dpi=300)
-                    plt.close()
                     print(f"  Saved: {output_file}")
                     
                 except Exception as e:
@@ -313,4 +355,4 @@ if __name__ == "__main__":
     results = factory.train_and_evaluate(X_train, y_train, X_test, y_test)
 
     print_result(results)
-    factory.explain_with_shap(X_test, feature_names=X.columns.tolist())
+    factory.explain_with_shap(X_test, feature_names=X.columns.tolist(), trained_model= results["best_model"])
