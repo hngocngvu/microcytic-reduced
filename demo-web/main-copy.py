@@ -19,6 +19,7 @@ from src.functions.utils import export_excel, export_word, export_pdf
 from src.dataclass.schema import Patient, DiagnosisRecord
 from src.database.medical_database import MedicalDatabase
 import datetime
+import numpy as np 
 
 today = datetime.date.today()
 
@@ -27,7 +28,7 @@ def input_field(label, key):
     try:
         val = float(val)
     except:
-        val = None
+        val = np.nan
     st.session_state.patient[key] = val
     return val
 

@@ -1,4 +1,5 @@
 import os
+import numpy as np 
 
 """
 BASE_DIR = os.path.abspath(
@@ -10,6 +11,7 @@ if BASE_DIR not in os.sys.path:
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.multioutput import MultiOutputClassifier
+import pandas as pd
 
 def make_pipeline(model, use_scaler= False):
     if use_scaler:
@@ -23,31 +25,43 @@ def make_pipeline(model, use_scaler= False):
         ])
 
 def join_text(texts):
-    return ", ".join(texts)
+    if texts is not None: 
+        return ", ".join(texts)
+    return texts
 
 
 def parse_number(t):
-    t = str(t).strip()
-
     if t == "":
-        return None
+        return pd.NA
     else:
         return float(t)
     
 
 def clean_text(t):
-    return t.lower()
+    if t is not None:
+        return t.lower()
+    return t
 
 def clean_cham(text):
-    return text.rstrip('.').strip()
+    if text is not None:
+        return text.rstrip('.').strip()
+    return ""
 
 def clean_phay(text):
-    return text.lstrip(',').strip()
+    if text is not None:
+        return text.lstrip(',').strip()
+    return ""
+
+def remove_duplicates_comma(text):
+    items = text.split(", ")
+    unique_items = list(dict.fromkeys(items))
+    return ", ".join(unique_items)
+
 
 """
 def cal_mentzer(mcv, rbc):
-    if rbc is None or rbc == 0:
-        return None
+    if rbc is pd.NA or rbc == 0:
+        return pd.NA
     return mcv/rbc
 
 def stfr_ferritin_index(stfr, ferritin, thres, labels):
@@ -55,7 +69,7 @@ def stfr_ferritin_index(stfr, ferritin, thres, labels):
     reason: str
     idx= 0
 
-    if ferritin is not None and stfr is not None and ferritin >0 and ferritin !=1: 
+    if ferritin is not pd.NA and stfr is not pd.NA and ferritin >0 and ferritin !=1: 
         idx= stfr / math.log10(ferritin)
 
     if idx > thres['stfr_fer_idx'][1]:
@@ -76,45 +90,47 @@ def stfr_ferritin_index(stfr, ferritin, thres, labels):
     return diagnosis, reason
 """
 
-
 def diendihst(data, thres, labels):
     diagnosis = ""
     reason = ""
 
-    if data.hbbart is not None and data.hbbart > thres["hbbart"]: 
-        diagnosis = labels[3]
-        reason= ""
+    hb_list= ["hbbart", "hbh", "hbe", "hbs", "hbc", "hb_other", "hbf"]
 
-    if data.hbh is not None and data.hbh > thres["hbh"]:
-        diagnosis = labels[3]
-        reason= ""
+    if ((not pd.isna(data.hba) and not pd.isna(data.hba2)) or not pd.isna(data.hbbart) or not pd.isna(data.hbh) or not pd.isna(data.hbf)):
 
+        if (data.hba < thres['hba'][1] and data.hba > thres['hba'][0]) and (data.hba2 < thres['hba2'][1] and data.hba2 > thres['hba2'][0]) and (any(pd.isna(getattr(data, f)) or getattr(data, f) ==0 for f in hb_list)):
+            diagnosis= labels[0]
 
-    if data.hba2 is not None and data.hba2 > thres["hba2"]:
-        diagnosis = labels[4]
-        reason= ""
+        elif (data.hbbart >= thres["hbbart"][1]) or (data.hbh > thres["hbh"][1]): 
+            diagnosis = labels[2]
 
+    
+        elif (data.hba2 > thres["hba2"][1]) or (data.hbf > thres["hbf"][1]):
+            diagnosis = labels[3]
 
-    if data.hbf is not None and data.hbf > thres["hbf"]:
-        diagnosis = labels[4]
-        reason= ""
-
-
-    #else: 
-        #reason = "Hội chẩn chuyên gia kèm tiền sử gia đình."
+        
+        else:
+            if not pd.isna(data.dotbiengen) and not pd.isna(data.man_tinh):
+                if data.dotbiengen==1:
+                    diagnosis= labels[4]
+                elif data.dotbiengen==1 and data.man_tinh==1:
+                    diagnosis= labels[1]
+                else:
+                    diagnosis= labels[0]
+                    reason= "IDA hoặc Hội chẩn chuyên gia"
 
     return diagnosis, reason
 
 
 def cal_tsat(fe, transferrin):
     try:
-        if fe is None or transferrin is None:
-            return None
+        if pd.isna(fe) or pd.isna(transferrin):
+            return pd.NA
         if transferrin == 0:
-            return None
-        return fe * 70.9 / transferrin
+            return pd.NA
+        return fe / (transferrin * 0.179)
     except:
-        return None
+        return pd.NA
 
 
 def print_result(result):

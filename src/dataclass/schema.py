@@ -1,48 +1,49 @@
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass, field
 from datetime import date
+import numpy as np 
 
 @dataclass
 class Input():
-    gender: str 
+    gender: Optional[str]= None
     kinh_nguyet: Optional[bool]= False
     da_day:  Optional[bool]= False
     tri:  Optional[bool]= False
     pregnant:  Optional[bool]= False
     diet:  Optional[bool]= False
-    age: Optional[int]= None
+    age: Optional[int]= np.nan
 
     man_tinh:  Optional[bool]= False
     cancer:  Optional[bool]= False
     phau_thuat:  Optional[bool]= False
 
-    rbc: Optional[float]= None 
-    hb: Optional[float]=  None 
-    mcv: Optional[float]=  None 
-    mchc: Optional[float]=  None 
-    rdw: Optional[float]=  None 
-    ret_he: Optional[float]=  None 
-    # pcv: Optional[float]= None
-    mch: Optional[float]= None
+    rbc: Optional[float]= np.nan
+    hb: Optional[float]=  np.nan
+    mcv: Optional[float]=  np.nan 
+    mchc: Optional[float]=  np.nan 
+    rdw: Optional[float]=  np.nan
+    ret_he: Optional[float]=  np.nan
+    # pcv: Optional[float]= np.nan
+    mch: Optional[float]= np.nan
 
-    fe: Optional[float]=  None 
-    ferritin: Optional[float]=  None 
-    transferrin: Optional[float]=  None 
-    tibc: Optional[float]=  None 
-    # stfr: Optional[float]=  None 
-    tsat: Optional[float]=  None
-    crp: Optional[float]=  None 
+    fe: Optional[float]=  np.nan 
+    ferritin: Optional[float]=  np.nan 
+    transferrin: Optional[float]=  np.nan 
+    tibc: Optional[float]=  np.nan 
+    # stfr: Optional[float]=  np.nan 
+    tsat: Optional[float]=  np.nan
+    crp: Optional[float]=  np.nan 
 
     dotbiengen: Optional[bool]= False
-    hba: Optional[float]=  None 
-    hba2: Optional[float]=  None 
-    hbf: Optional[float]=  None 
-    hbh: Optional[float]=  None 
-    hbe: Optional[float]=  None 
-    # hbc: Optional[float]=  None 
-    hbs: Optional[float]=  None
-    hbbart: Optional[float]=  None 
-    hb_other: Optional[float]=  None 
+    hba: Optional[float]=  np.nan 
+    hba2: Optional[float]=  np.nan 
+    hbf: Optional[float]=  np.nan 
+    hbh: Optional[float]=  np.nan 
+    hbe: Optional[float]=  np.nan 
+    # hbc: Optional[float]=  np.nan 
+    hbs: Optional[float]=  np.nan
+    hbbart: Optional[float]=  np.nan 
+    hb_other: Optional[float]=  np.nan 
 
 
 @dataclass
@@ -63,24 +64,28 @@ class Config():
         'ferritin': [30, 100],
         #'rdw': 0.15,
         #'mentzer': 13,
-        'hbbart':0.01,
-        'hbh': 0.01,
-        'hba2': 0.035,
-        'hbf': 0.01,
-        #'hbe': 0,
-        #'hbs': 0,
-        #'hbc': 0,
-        #'hb_other': 0,
-        'tsat': [0.2],
-        'crp': 5
+        'hbbart':[0,0.01],
+        'hbh': [0,0.01],
+        'hba': [0.965, 0.98],
+        'hba2': [0.02, 0.035],
+        'hbf': [0, 0.01],
+        'hbe': 0,
+        'hbs': 0,
+        'hbc': 0,
+        'hb_other': 0,
+        'tsat': 0.2,
+        'crp': 5,
+        'fe': 5.8,
+        'mcv': 80
         # 'stfr_fer_idx' : [1, 2]
     })
 
     labels= [
             "IDA",
             "ACD",
-            'alpha-Thalassemia',
-            'beta-Thalassemia'
+            'alpha Thalassemia',
+            'beta Thalassemia',
+            'Thalassemia'
         ]
 
 @dataclass
@@ -107,32 +112,32 @@ class DiagnosisRecord:
     cancer:  Optional[bool]= False
     phau_thuat:  Optional[bool]= False
 
-    rbc: Optional[float]= None 
-    hb: Optional[float]=  None 
-    mcv: Optional[float]=  None 
-    mchc: Optional[float]=  None 
-    rdw: Optional[float]=  None 
-    ret_he: Optional[float]=  None 
+    rbc: Optional[float]= np.nan
+    hb: Optional[float]=  np.nan 
+    mcv: Optional[float]=  np.nan 
+    mchc: Optional[float]=  np.nan 
+    rdw: Optional[float]=  np.nan 
+    ret_he: Optional[float]=  np.nan 
 
-    fe: Optional[float]=  None 
-    ferritin: Optional[float]=  None 
-    transferrin: Optional[float]=  None 
-    tibc: Optional[float]=  None 
-    #stfr: Optional[float]=  None 
-    crp: Optional[float]=  None 
+    fe: Optional[float]=  np.nan 
+    ferritin: Optional[float]=  np.nan 
+    transferrin: Optional[float]=  np.nan 
+    tibc: Optional[float]=  np.nan 
+    #stfr: Optional[float]=  np.nan 
+    crp: Optional[float]=  np.nan 
 
     dotbiengen: Optional[bool]= False
-    hba: Optional[float]=  None 
-    hba2: Optional[float]=  None 
-    hbf: Optional[float]=  None 
-    hbh: Optional[float]=  None 
-    hbe: Optional[float]=  None 
-    #hbc: Optional[float]=  None 
-    hbs: Optional[float]=  None
-    hbbart: Optional[float]=  None 
-    hb_other: Optional[float]=  None 
+    hba: Optional[float]=  np.nan 
+    hba2: Optional[float]=  np.nan 
+    hbf: Optional[float]=  np.nan 
+    hbh: Optional[float]=  np.nan 
+    hbe: Optional[float]=  np.nan 
+    #hbc: Optional[float]=  np.nan 
+    hbs: Optional[float]=  np.nan
+    hbbart: Optional[float]=  np.nan 
+    hb_other: Optional[float]=  np.nan 
 
 
     diagnoses: Optional[str]= None
-    reasons: Optional[str]= None
+    reasons: Optional[str|None]= None
 
