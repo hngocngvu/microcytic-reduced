@@ -94,18 +94,18 @@ def diendihst(data, thres, labels):
     diagnosis = ""
     reason = ""
 
-    hb_list= ["hbbart", "hbh", "hbe", "hbs", "hbc", "hb_other", "hbf"]
+    hb_list= ["hbbart", "hbh", "hbe", "hbs", "hb_other", "hbf"]
 
-    if ((not pd.isna(data.hba) and not pd.isna(data.hba2)) or not pd.isna(data.hbbart) or not pd.isna(data.hbh) or not pd.isna(data.hbf)):
+    if ((not (pd.isna(data.hba) and pd.isna(data.hba2))) or not pd.isna(data.hbbart) or not pd.isna(data.hbh) or not pd.isna(data.hbf)):
 
-        if (data.hba < thres['hba'][1] and data.hba > thres['hba'][0]) and (data.hba2 < thres['hba2'][1] and data.hba2 > thres['hba2'][0]) and (any(pd.isna(getattr(data, f)) or getattr(data, f) ==0 for f in hb_list)):
+        if (data.hba < thres['hba'][1] and data.hba > thres['hba'][0]) and (data.hba2 < thres['hba2'][1] and data.hba2 > thres['hba2'][0]) and (all(pd.isna(getattr(data, f)) or getattr(data, f) ==0 for f in hb_list)):
             diagnosis= labels[0]
 
-        elif (data.hbbart >= thres["hbbart"][1]) or (data.hbh > thres["hbh"][1]): 
+        elif (data.hbbart >= thres["hbbart"]) or (data.hbh > thres["hbh"]): 
             diagnosis = labels[2]
 
     
-        elif (data.hba2 > thres["hba2"][1]) or (data.hbf > thres["hbf"][1]):
+        elif (data.hba2 > thres["hba2"][1]) or (data.hbf > thres["hbf"]):
             diagnosis = labels[3]
 
         
@@ -128,7 +128,7 @@ def cal_tsat(fe, transferrin):
             return pd.NA
         if transferrin == 0:
             return pd.NA
-        return fe / (transferrin * 0.179)
+        return fe*100 / (transferrin * 0.179)
     except:
         return pd.NA
 
