@@ -1,9 +1,15 @@
 data/
 
+.vscode/ 
+
 __pycache__/
 
 note.txt
 
-eda/
+png/
 
 **/.streamlit/secrets.toml
+
+*.png
+
+*.csv

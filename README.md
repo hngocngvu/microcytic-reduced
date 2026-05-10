@@ -6,7 +6,7 @@ In hospitals, the diagnostic process involves multiple laboratory tests, which c
 
 By leveraging available laboratory data, it is possible to identify a subset of key diagnostic indicators that can effectively distinguish between different causes of microcytic anemia. Optimizing the selection of laboratory parameters may help maintain diagnostic accuracy while reducing the number of required tests. This approach can improve diagnostic efficiency, minimize patient burden, and support more cost-effective clinical decision-making.
 
-The dataset is provided by the hospital, therefore it is privately used. No analysis of this dataset is uploaded in this repository.
+The dataset is provided by the hospital, therefore it is private.
 
 ## Dependency Instalation
 
@@ -18,4 +18,6 @@ pip install -r requirements.txt
 
 - Rule-based: provided by the hospital
 
-- Machine learning & Deep learning based: may develop in the future if the provided dataset is larger 
+- Machine learning & Deep learning based: develop in the future if the provided dataset is larger 
+
+

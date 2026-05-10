@@ -1,32 +1,37 @@
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass, field
 from datetime import date
+import pandas as pd
 
 @dataclass
 class Input():
-    gender: str 
+    gender: Optional[str]= None
     kinh_nguyet: Optional[bool]= False
     da_day:  Optional[bool]= False
     tri:  Optional[bool]= False
     pregnant:  Optional[bool]= False
     diet:  Optional[bool]= False
+    age: Optional[int]= None
 
     man_tinh:  Optional[bool]= False
     cancer:  Optional[bool]= False
     phau_thuat:  Optional[bool]= False
 
-    rbc: Optional[float]= None 
-    hb: Optional[float]=  None 
+    rbc: Optional[float]= None
+    hb: Optional[float]=  None
     mcv: Optional[float]=  None 
     mchc: Optional[float]=  None 
-    rdw: Optional[float]=  None 
-    ret_he: Optional[float]=  None 
+    rdw: Optional[float]=  None
+    ret_he: Optional[float]=  None
+    # pcv: Optional[float]= None
+    mch: Optional[float]= None
 
     fe: Optional[float]=  None 
     ferritin: Optional[float]=  None 
     transferrin: Optional[float]=  None 
     tibc: Optional[float]=  None 
-    stfr: Optional[float]=  None 
+    # stfr: Optional[float]=  None 
+    tsat: Optional[float]=  None
     crp: Optional[float]=  None 
 
     dotbiengen: Optional[bool]= False
@@ -35,7 +40,7 @@ class Input():
     hbf: Optional[float]=  None 
     hbh: Optional[float]=  None 
     hbe: Optional[float]=  None 
-    hbc: Optional[float]=  None 
+    # hbc: Optional[float]=  None 
     hbs: Optional[float]=  None
     hbbart: Optional[float]=  None 
     hb_other: Optional[float]=  None 
@@ -52,34 +57,35 @@ class Output():
 class Config():
     # weights: dict= field(default_factory= lambda: {})
     thres: dict= field(default_factory= lambda: {
-        'hb': {"pregnant": 110, 
-                "nữ": 120, 
-                "nam": 130}, #thresholds cho PN có thai, nữ và nam
+        # 'hb': {"pregnant": 110, 
+                #"nữ": 120, 
+                #"nam": 130}, #thresholds cho PN có thai, nữ và nam
 
         'ferritin': [30, 100],
-        'rdw': 0.15,
-        'mentzer': 13,
-        'hbbart': 0,
-        'hbh': 0,
-        'hba2': 0.035,
-        'hbf': 0.01,
-        'hbe': 0,
-        'hbs': 0,
-        'hbc': 0,
-        'hb_other': 0,
-        'tsat': [0.2, 0.3],
-        'crp': 5, 
-        'stfr_fer_idx' : [1, 2]
+        #'rdw': 0.15,
+        #'mentzer': 13,
+        'hbbart':1,
+        'hbh': 1,
+        'hba': [96.5, 98],
+        'hba2': [2, 3.5],
+        'hbf': 1,
+        #'hbe': 0,
+        #'hbs': 0,
+        #'hbc': 0,
+        #'hb_other': 0,
+        'tsat': 20,
+        'crp': 5,
+        'fe': 5.8,
+        'mcv': 80
+        # 'stfr_fer_idx' : [1, 2]
     })
 
     labels= [
-            'Thalassemia',
             "IDA",
-            "CRNN",
             "ACD",
-            "IDA/ACD",
-            'alpha-Thalassemia',
-            'beta-Thalassemia'
+            'Alpha thalassemia',
+            'Beta thalassemia',
+            'Thalassemia'
         ]
 
 @dataclass
@@ -106,7 +112,7 @@ class DiagnosisRecord:
     cancer:  Optional[bool]= False
     phau_thuat:  Optional[bool]= False
 
-    rbc: Optional[float]= None 
+    rbc: Optional[float]= None
     hb: Optional[float]=  None 
     mcv: Optional[float]=  None 
     mchc: Optional[float]=  None 
@@ -117,7 +123,7 @@ class DiagnosisRecord:
     ferritin: Optional[float]=  None 
     transferrin: Optional[float]=  None 
     tibc: Optional[float]=  None 
-    stfr: Optional[float]=  None 
+    #stfr: Optional[float]=  None 
     crp: Optional[float]=  None 
 
     dotbiengen: Optional[bool]= False
@@ -126,12 +132,12 @@ class DiagnosisRecord:
     hbf: Optional[float]=  None 
     hbh: Optional[float]=  None 
     hbe: Optional[float]=  None 
-    hbc: Optional[float]=  None 
+    #hbc: Optional[float]=  None 
     hbs: Optional[float]=  None
     hbbart: Optional[float]=  None 
     hb_other: Optional[float]=  None 
 
 
     diagnoses: Optional[str]= None
-    reasons: Optional[str]= None
+    reasons: Optional[str|None]= None
 
