@@ -28,7 +28,7 @@ def input_field(label, key):
     try:
         val = float(val)
     except:
-        val = np.nan
+        val = pd.NA
     st.session_state.patient[key] = val
     return val
 

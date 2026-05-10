@@ -1,4 +1,3 @@
-import os
 import numpy as np 
 
 """
@@ -31,10 +30,18 @@ def join_text(texts):
 
 
 def parse_number(t):
-    if t == "":
-        return pd.NA
-    else:
+    if pd.isna(t):
+        return np.nan
+
+    if isinstance(t, str) and t.strip() == "":
+        return np.nan
+
+    try:
         return float(t)
+    except (TypeError, ValueError):
+        return np.nan
+    
+
     
 
 def clean_text(t):
@@ -60,8 +67,8 @@ def remove_duplicates_comma(text):
 
 """
 def cal_mentzer(mcv, rbc):
-    if rbc is pd.NA or rbc == 0:
-        return pd.NA
+    if rbc is np.nan or rbc == 0:
+        return np.nan
     return mcv/rbc
 
 def stfr_ferritin_index(stfr, ferritin, thres, labels):
@@ -69,7 +76,7 @@ def stfr_ferritin_index(stfr, ferritin, thres, labels):
     reason: str
     idx= 0
 
-    if ferritin is not pd.NA and stfr is not pd.NA and ferritin >0 and ferritin !=1: 
+    if ferritin is not np.nan and stfr is not np.nan and ferritin >0 and ferritin !=1: 
         idx= stfr / math.log10(ferritin)
 
     if idx > thres['stfr_fer_idx'][1]:
@@ -93,27 +100,31 @@ def stfr_ferritin_index(stfr, ferritin, thres, labels):
 def diendihst(data, thres, labels):
     diagnosis = ""
     reason = ""
+    
 
     hb_list= ["hbbart", "hbh", "hbe", "hbs", "hb_other", "hbf"]
 
+
     if ((not (pd.isna(data.hba) and pd.isna(data.hba2))) or not pd.isna(data.hbbart) or not pd.isna(data.hbh) or not pd.isna(data.hbf)):
 
-        if (data.hba < thres['hba'][1] and data.hba > thres['hba'][0]) and (data.hba2 < thres['hba2'][1] and data.hba2 > thres['hba2'][0]) and (all(pd.isna(getattr(data, f)) or getattr(data, f) ==0 for f in hb_list)):
+        if ((data.hba < thres['hba'][1] and data.hba > thres['hba'][0]) and (data.hba2 < thres['hba2'][1] and data.hba2 > thres['hba2'][0]) and all(pd.isna(getattr(data, f)) or getattr(data, f) == 0 for f in hb_list)):
             diagnosis= labels[0]
 
         elif (data.hbbart >= thres["hbbart"]) or (data.hbh > thres["hbh"]): 
             diagnosis = labels[2]
-
     
         elif (data.hba2 > thres["hba2"][1]) or (data.hbf > thres["hbf"]):
             diagnosis = labels[3]
 
+        elif data.dotbiengen:
+            diagnosis= labels[4]
+
         
         else:
             if not pd.isna(data.dotbiengen) and not pd.isna(data.man_tinh):
-                if data.dotbiengen==1:
+                if data.dotbiengen:
                     diagnosis= labels[4]
-                elif data.dotbiengen==1 and data.man_tinh==1:
+                elif data.dotbiengen and data.man_tinh:
                     diagnosis= labels[1]
                 else:
                     diagnosis= labels[0]
@@ -125,12 +136,12 @@ def diendihst(data, thres, labels):
 def cal_tsat(fe, transferrin):
     try:
         if pd.isna(fe) or pd.isna(transferrin):
-            return pd.NA
+            return np.nan
         if transferrin == 0:
-            return pd.NA
+            return np.nan
         return fe*100 / (transferrin * 0.179)
     except:
-        return pd.NA
+        return np.nan
 
 
 def print_result(result):
