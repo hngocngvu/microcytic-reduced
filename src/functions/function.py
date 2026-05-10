@@ -1,5 +1,5 @@
 import numpy as np 
-
+import streamlit as st 
 """
 BASE_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "..")
@@ -29,20 +29,16 @@ def join_text(texts):
     return texts
 
 
-def parse_number(t):
-    if pd.isna(t):
-        return np.nan
 
-    if isinstance(t, str) and t.strip() == "":
-        return np.nan
-
+def input_field(label, key):
+    val = st.text_input(label, value=str(st.session_state.patient.get(key, "")))
     try:
-        return float(t)
-    except (TypeError, ValueError):
-        return np.nan
-    
+        val = float(val)
+    except:
+        val = pd.NA
+    st.session_state.patient[key] = val
+    return val
 
-    
 
 def clean_text(t):
     if t is not None:
