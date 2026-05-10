@@ -21,3 +21,16 @@ pip install -r requirements.txt
 - Machine learning & Deep learning based: develop in the future if the provided dataset is larger 
 
 
+## Demo 
+
+link:
+```
+https://microcytic-reduced-v38sx4tgwmfhvrgpztsxvd.streamlit.app/
+```
+
+command:
+```
+streamlit run demo-web/main.py
+```
+
+
