@@ -11,8 +11,24 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.multioutput import MultiOutputClassifier
 import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
 
 def make_pipeline(model, use_scaler= False):
+
+    if isinstance(model, RandomForestClassifier) or isinstance(model, DecisionTreeClassifier):
+        return Pipeline([
+            ("clf", RandomForestClassifier(random_state=42))
+        ])
+
+    # KNN hỗ trợ multi-output sẵn nhưng cần scale
+    if isinstance(model, KNeighborsClassifier):
+        return Pipeline([
+            ("scaler", StandardScaler()),
+            ("clf", model)
+        ])
+
     if use_scaler:
         return Pipeline([
             ("scaler", StandardScaler()),
@@ -22,6 +38,7 @@ def make_pipeline(model, use_scaler= False):
         return Pipeline([
             ("clf", MultiOutputClassifier(model))
         ])
+    
 
 def join_text(texts):
     if texts is not None: 
@@ -99,28 +116,34 @@ def diendihst(data, thres, labels):
     
 
     hb_list= ["hbbart", "hbh", "hbe", "hbs", "hb_other", "hbf"]
+    alpha = ["sea dị hợp tử", "cd142", "3.7", "4.2"]
+    beta = ["cd41,42", "cd26", "ivs1.1.", "cd17"]
+
 
 
     if ((not (pd.isna(data.hba) and pd.isna(data.hba2))) or not pd.isna(data.hbbart) or not pd.isna(data.hbh) or not pd.isna(data.hbf)):
 
-        if ((data.hba < thres['hba'][1] and data.hba > thres['hba'][0]) and (data.hba2 < thres['hba2'][1] and data.hba2 > thres['hba2'][0]) and all(pd.isna(getattr(data, f)) or getattr(data, f) == 0 for f in hb_list)):
-            diagnosis= labels[0]
-
-        elif (data.hbbart >= thres["hbbart"]) or (data.hbh > thres["hbh"]): 
+        
+        if pd.notna(data.dotbiengen) and any(x in data.dotbiengen.lower() for x in alpha):
             diagnosis = labels[2]
-    
-        elif (data.hba2 > thres["hba2"][1]) or (data.hbf > thres["hbf"]):
+
+        elif pd.notna(data.dotbiengen) and any(x in data.dotbiengen.lower() for x in beta):
             diagnosis = labels[3]
 
-        elif data.dotbiengen:
-            diagnosis= labels[4]
 
+        elif ((data.hba < thres['hba'][1] and data.hba > thres['hba'][0]) and (data.hba2 < thres['hba2'][1] and data.hba2 > thres['hba2'][0]) and all(pd.isna(getattr(data, f)) or getattr(data, f) == 0 for f in hb_list)):
+                diagnosis= labels[0]
+
+        elif (data.hbbart >= thres["hbbart"]) or (data.hbh > thres["hbh"]): 
+                diagnosis = labels[2]
         
+        elif (data.hba2 > thres["hba2"][1]) or (data.hbf > thres["hbf"]):
+                diagnosis = labels[3]
+
+
         else:
-            if not pd.isna(data.dotbiengen) and not pd.isna(data.man_tinh):
-                if data.dotbiengen:
-                    diagnosis= labels[4]
-                elif data.dotbiengen and data.man_tinh:
+            if not pd.isna(data.dotbiengen) or not pd.isna(data.man_tinh):
+                if not pd.isna(data.dotbiengen) and data.man_tinh:
                     diagnosis= labels[1]
                 else:
                     diagnosis= labels[0]
@@ -144,6 +167,10 @@ def print_result(result):
     print(f"Best params: {result['best_params']}")
     print(f"Accuracy: {result['accuracy']:.4f}")
     print(f"F1-macro: {result['f1_macro']:.4f}")
+    print(f"F1-micro: {result['f1_micro']:.4f}")
+    print(f"Hamming Loss: {result['hamming_loss']:.4f}")
+    print(f"Jaccard Score: {result['jaccard_score']:.4f}")
+    
     print(f"CV F1: {float(result['cv_mean_f1']):.4f} ± {float(result['cv_std_f1']):.4f}")
     print(f"Training time: {result['training_time_sec']:.2f} sec")
 

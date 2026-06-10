@@ -56,12 +56,10 @@ def normalize_missing_values(df):
 def clean_concat(df):
     df["Chẩn đoán"] = df["Chẩn đoán"].apply(convert_label)
 
-    df["Đột biến gen thalassemia"] = df["Đột biến gen thalassemia"].astype(bool)
     df["ACD"] = df["Chẩn đoán"].str.contains("ACD", na=False).astype(int)
     df["IDA"] = df["Chẩn đoán"].str.contains("IDA", na=False).astype(int)
-    df["Thal"] = df["Chẩn đoán"].str.contains("thalassemia", case=False, na=False).astype(int)
-
-
+    df["Alpha thalassemia"] = df["Chẩn đoán"].str.contains("alpha thalassemia", case=False, na=False).astype(int)
+    df["Beta thalassemia"] = df["Chẩn đoán"].str.contains("beta thalassemia", case=False, na=False).astype(int)
 
 
     for i, row in df.iterrows():
@@ -90,9 +88,7 @@ def clean_concat(df):
 
 if __name__ == "__main__":
     
-    df= pd.concat([df_acd, df_thalass, df_ida, df_mix], axis=0)
-
-    print(df[df["Chẩn đoán"]=="CRNN"])
+    df= pd.concat([df_acd, df_thalass, df_ida], axis=0)
 
 
     df_new = clean_concat(df)
@@ -100,6 +96,6 @@ if __name__ == "__main__":
     print(df_new.info())
     df_new.to_csv(os.path.join(BASE_DIR, "data", "concat_for_eda.csv"), index=False)
 
-    df_final= df_new.drop(columns=["Chẩn đoán", "nguyên nhân thiếu sắt"])
+    df_final= df_new.drop(columns=["Chẩn đoán"])
     df_final.to_csv(os.path.join(BASE_DIR, "data", "concat.csv"), index=False)
 

@@ -19,30 +19,32 @@ from sklearn.model_selection import (
     cross_val_score,
     GridSearchCV,
     RandomizedSearchCV,
-    KFold
 )
-from sklearn.metrics import accuracy_score, f1_score, classification_report
+from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
+from sklearn.metrics import accuracy_score, f1_score, classification_report, hamming_loss, jaccard_score
 import time
 import joblib
 import shap
 import os
 import matplotlib.pyplot as plt
-from sklearn.multioutput import MultiOutputClassifier
 from sklearn.metrics import make_scorer, f1_score
-
-
-
-
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
+from sklearn.tree import DecisionTreeClassifier
 
 models_config = {
+    "DT": {
+    "model": make_pipeline(
+        DecisionTreeClassifier(random_state=42)
+    ),
+    "params": {
+        "clf__max_depth": [3, 5, None]
+    }
+},
 
     "RF": {
         "model": make_pipeline(RandomForestClassifier(random_state=42)),
         "params": {
-            "clf__estimator__n_estimators": [100, 200],
-            "clf__estimator__max_depth": [5, 10, None]
+            "clf__n_estimators": [100, 200],
+            "clf__max_depth": [5, 10]
         }
     },
 
@@ -114,11 +116,11 @@ class ModelFactory():
         model, param_grid = self.get_model()
         start_time = time.time()
 
-        cv_strategy = KFold(n_splits=3, shuffle=True, random_state=42)
+        cv_strategy = MultilabelStratifiedKFold(n_splits=3, shuffle=True, random_state=42)
         scorer = make_scorer(f1_score, average='macro')
         
         if param_grid:
-            if self.model_name in ["LightGBM", "XGBoost", "RF"]:
+            if self.model_name in ["LightGBM", "XGBoost", "RF", "DT"]:
                 search = RandomizedSearchCV(
                     model,
                     param_distributions=param_grid,
@@ -174,6 +176,9 @@ class ModelFactory():
         acc = accuracy_score(y_test, y_pred)
         f1_macro = f1_score(y_test, y_pred, average='macro')
         f1_micro = f1_score(y_test, y_pred, average='micro')
+        f1_weighted = f1_score(y_test, y_pred, average="weighted", zero_division=0)
+        jaccard = jaccard_score(y_test, y_pred, average="samples", zero_division=0)
+        hamming= hamming_loss(y_test, y_pred)
         
         # Save model
         model_filename = f"{self.model_name}_best_model.pkl"
@@ -187,10 +192,13 @@ class ModelFactory():
             "accuracy": acc,
             "f1_macro": f1_macro,
             "f1_micro": f1_micro,
+            "f1_weighted": f1_weighted,
+            "jaccard_score": jaccard,
+            "hamming_loss": hamming,
             "cv_mean_f1": cv_mean_f1,
             "cv_std_f1": cv_std_f1,
             "training_time_sec": training_time,
-            "report": classification_report(y_test, y_pred, target_names=["ACD", "IDA", "Thal"], digits=4),
+            "report": classification_report(y_test, y_pred, target_names=["ACD", "IDA", "Alpha thalassemia" ,"Beta thalassemia"], digits=4),
             "saved_model": model_filename
         }
     
@@ -200,7 +208,7 @@ class ModelFactory():
             For MultiOutputClassifier, we explain each output separately.
             """
             
-            if self.model_name not in ["RF", "XGBoost", "LightGBM"]:
+            if self.model_name not in ["RF", "XGBoost", "LightGBM", "DT"]:
                 print(f"SHAP explanation skipped: {self.model_name} is not a tree-based model.")
                 return
     
@@ -210,7 +218,7 @@ class ModelFactory():
             # Load the trained model
             
             # For MultiOutputClassifier, we need to explain each estimator separately
-            output_names = [f"{self.model_name}_ACD", f"{self.model_name}_IDA", f"{self.model_name}_Thal"]  # Update based on your targets
+            output_names = [f"{self.model_name}_ACD", f"{self.model_name}_IDA", f"{self.model_name}_AThal", f"{self.model_name}_BThal"]  # Update based on your targets
 
             multi_output_model = model.named_steps["clf"]
 
@@ -219,7 +227,7 @@ class ModelFactory():
             else:
                 X_input= X_test.values
             
-            for i, (estimator, output_name) in enumerate(zip(multi_output_model.estimators_, output_names)):
+            for _, (estimator, output_name) in enumerate(zip(multi_output_model.estimators_, output_names)):
                 print(f"\nGenerating SHAP explanations for output: {output_name}")
                 
                 try:

@@ -12,7 +12,11 @@ def clean_df(df, text_cols):
     b.columns= b.iloc[0]
     c= b.drop(index= 0)
     d= c.drop(columns= "STT")
+
+
     e = d.iloc[:, :-4] # bỏ cột tên NaN
+
+    
 
     for i in range(len(e.columns)):
         if i not in text_cols:
@@ -33,10 +37,6 @@ def clean_df(df, text_cols):
         e["Tiền sử hoặc bệnh kèm theo"].astype(str).str.strip().ne("")
     )
     
-    e["Đột biến gen thalassemia (nếu có)"] = (
-        e["Đột biến gen thalassemia (nếu có)"].notna() &
-        e["Đột biến gen thalassemia (nếu có)"].astype(str).str.strip().ne("")
-    )
 
     e= e.rename(columns={
     "RBC (T/l)\nSố lượng hồng cầu": "RBC",
@@ -60,7 +60,16 @@ def clean_df(df, text_cols):
     "Đột biến gen thalassemia (nếu có)": "Đột biến gen thalassemia",
     "Chẩn đoán (chỉ liên quan hồng cầu nhỏ: IDA, ACD, Thalassemia, CRNN)": "Chẩn đoán"
     })
+    
+    e= e[~e["Chẩn đoán"]
+    .fillna("")
+    .str.contains(r"Thalassemia|CRNN", case=False, na=False)]
 
+
+    e.drop(
+    columns=["Đột biến gen thalassemia"],
+    errors="ignore",
+    inplace=True)
     
 
     return e

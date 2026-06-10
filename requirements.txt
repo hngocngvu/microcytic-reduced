@@ -11,3 +11,4 @@ catboost
 matplotlib
 seaborn
 shap
+iterative-stratification

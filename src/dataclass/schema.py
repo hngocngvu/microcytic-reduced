@@ -84,9 +84,8 @@ class Config():
             "IDA",
             "ACD",
             'Alpha thalassemia',
-            'Beta thalassemia',
-            'Thalassemia'
-        ]
+            'Beta thalassemia'
+            ]
 
 @dataclass
 class Patient:
@@ -126,7 +125,7 @@ class DiagnosisRecord:
     #stfr: Optional[float]=  None 
     crp: Optional[float]=  None 
 
-    dotbiengen: Optional[bool]= False
+    dotbiengen: Optional[str]= None
     hba: Optional[float]=  None 
     hba2: Optional[float]=  None 
     hbf: Optional[float]=  None 

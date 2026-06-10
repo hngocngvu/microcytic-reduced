@@ -1,29 +1,38 @@
 import pandas as pd
 import os
-
+from sklearn.ensemble import RandomForestClassifier
 from feature_selection import FeatureSelection
 
 if __name__ == "__main__":
     # Load data
     df = pd.read_csv(os.path.join("data", "concat.csv"))
 
-    X= df[df.columns.difference(["ACD", "IDA", "Thal"])]
-    y = df[["ACD", "IDA", "Thal"]]
+    X= df[df.columns.difference(["ACD", "IDA", "Alpha thalassemia" , "Beta thalassemia"])]
+    y = df[["ACD", "IDA", "Alpha thalassemia" ,"Beta thalassemia"]]
 
-    fs= FeatureSelection(X, y)
+
+    rf= RandomForestClassifier(
+        n_estimators=200,
+        random_state=42,
+        n_jobs=-1
+    )
+
+    fs= FeatureSelection(X, y, model= rf)
+    
     corr_filter= fs.correlation_filter()
+    importance_df= fs.get_features_permutation()
 
-    rf= fs.get_features_rf()
-    print(rf)
+    results_df, best_k= fs.evaluate_k(importance_df) 
+    ranked_features= fs.features.iloc[:best_k]
 
-    lr= fs.get_features_lr()
-    print(lr)
+    print(importance_df)
+    print(results_df)
+    print(f"Best k: {best_k}")
 
-    cb= fs.combine_features()
-    print(cb)
+    fs.plot_elbow_method(importance_df)
+    fs.plot_elbow_method(importance_df)
+    fs.plot_k_performance(results_df)
 
-    e= fs.evaluate_k(cb)
-    print(e)
 
     # final_df = df.drop(columns=["NEUTp", "LYMn", "LYMp"])
     # final_df.to_csv(os.path.join(BASE_DIR, "data", "final.csv"), index=False)

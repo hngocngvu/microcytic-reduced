@@ -22,15 +22,25 @@ def clean_thalass(df_thalass, cols):
 
     d[cols] = d[cols].apply(pd.to_numeric, errors="coerce")
 
-    d["Đột biến gen thalassemia"] = (
-        d["Đột biến gen thalassemia"].notna() &
-        d["Đột biến gen thalassemia"].astype(str).str.strip().ne("")
-    )
 
     d["Tiền sử hoặc bệnh kèm theo"] = (
         d["Tiền sử hoặc bệnh kèm theo"].notna() &
         d["Tiền sử hoặc bệnh kèm theo"].astype(str).str.strip().ne("")
     )
+
+    alpha_pattern = r"sea|3\.7|4\.2|cd142"
+    beta_pattern = r"cd41[,;/ ]*42|cd17|cd26"
+
+    d["alpha_gen"] = (
+        d["Đột biến gen thalassemia"].str.contains(alpha_pattern, regex=True, na=False)
+    ).astype(int)
+
+    d["beta_gen"] = (
+        d["Đột biến gen thalassemia"].str.contains(beta_pattern, regex=True, na=False)
+    ).astype(int)
+
+    d = d.drop(columns=["Đột biến gen thalassemia"])
+
 
     df_part = d.head(28)
 

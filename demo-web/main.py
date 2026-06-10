@@ -257,7 +257,7 @@ if page == "Chẩn đoán":
         hb_other= input_field("Chỉ số Hb khác nếu có", "hb_other")
             # st.write(hb_other)
 
-        dotbiengen= st.checkbox("Đột biến gen thalassemia", value= st.session_state.patient.get("dotbiengen", False))
+        dotbiengen= st.text_input("Đột biến gen thalassemia", value= st.session_state.patient.get("dotbiengen", "dotbiengen"))
             # st.write(dotbiengen)
 
     submitted = st.button("Submit", use_container_width=True, type="primary")

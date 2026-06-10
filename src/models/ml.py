@@ -7,14 +7,13 @@ if BASE_DIR not in os.sys.path:
 
 from src.functions.function import print_result
 from src.dataclass.modelfactory import ModelFactory, models_config
-from sklearn.model_selection import train_test_split
 
-from sklearn.preprocessing import LabelEncoder
 import pandas as pd 
 import argparse
+from iterstrat.ml_stratifiers import MultilabelStratifiedShuffleSplit
 
 if __name__ == "__main__":
-    # RF, XGBoost, LightGBM, LR, SVM, KNN, NaiveBayes
+    # RF, XGBoost, LightGBM, LR, SVM, KNN, NaiveBayes, DT
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -35,13 +34,17 @@ if __name__ == "__main__":
 
     #df = df.apply(pd.to_numeric, errors='coerce')
 
-    X = df.drop(columns=["ACD", "IDA", "Thal"])
-    y = df[["ACD", "IDA", "Thal"]]
+    X = df.drop(columns=["ACD", "IDA", "Alpha thalassemia", "Beta thalassemia"])
+    y = df[["ACD", "IDA", "Alpha thalassemia" ,"Beta thalassemia"]]
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
-    )
-    df_test = df.loc[X_test.index]
+    msss= MultilabelStratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
+    train_idx, test_idx = next(msss.split(X, y))
+
+    X_train, y_train = X.iloc[train_idx], y.iloc[train_idx]
+    X_test, y_test = X.iloc[test_idx], y.iloc[test_idx]
+    
+
+    df_test = df.loc[test_idx]
     df_test.to_csv("data/test_data.csv", index=False)
 
     factory = ModelFactory(model_name)

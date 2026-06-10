@@ -34,7 +34,7 @@ class Classifier():
         #if data.gender == "nữ" and data.pregnant is True:
             #data.gender= "pregnant"
 
-        FIELDS = ["mcv", "crp", "ferritin", "transferrin", "dotbiengen", "hbbart", "hba2", "hbh", "hbf", "fe"]
+        FIELDS = ["mcv", "crp", "ferritin", "transferrin", "hbbart", "hba2", "hbh", "hbf", "fe"]
 
         if not pd.isna(data.fe) and not pd.isna(data.transferrin) and data.transferrin != 0:
             tsat= cal_tsat(data.fe, data.transferrin)
@@ -43,8 +43,7 @@ class Classifier():
         if any(not pd.isna(getattr(data, f)) for f in FIELDS):
             if data.mcv < thres['mcv']:
                 if data.ferritin < thres['ferritin'][0]:
-                    #d1= labels[0]
-                    #diagnoses.append(d1)
+                    
                     d2, r1= diendihst(data, thres, labels)
                     diagnoses.append(d2)
                     reasons.append(r1)
