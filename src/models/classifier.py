@@ -41,16 +41,16 @@ class Classifier():
             # mentzer= cal_mentzer(data.mcv, data.rbc)
 
         if any(not pd.isna(getattr(data, f)) for f in FIELDS):
-            if data.mcv < thres['mcv']:
-                if data.ferritin < thres['ferritin'][0]:
-                    
+            if not pd.isna(data.mcv) and data.mcv < thres['mcv']:
+                if not pd.isna(data.ferritin) and data.ferritin < thres['ferritin'][0]:
+
                     d2, r1= diendihst(data, thres, labels)
                     diagnoses.append(d2)
                     reasons.append(r1)
 
-                elif data.ferritin > thres['ferritin'][1]:
+                elif not pd.isna(data.ferritin) and data.ferritin > thres['ferritin'][1]:
                     d3= ""
-                    if (data.crp > thres['crp'] and data.fe < thres['fe']) and (not pd.isna(tsat) and tsat < thres['tsat']):
+                    if (not pd.isna(data.crp) and data.crp > thres['crp'] and not pd.isna(data.fe) and data.fe < thres['fe']) and (not pd.isna(tsat) and tsat < thres['tsat']):
                         d3= labels[1]
                     else:
                         d3, r2= diendihst(data, thres, labels)
@@ -121,7 +121,7 @@ class Classifier():
         # predict
         probs = model.predict_proba(data)
 
-        labels = ["ACD", "IDA", "Thal"]
+        labels = ["ACD", "IDA", "Alpha thalassemia", "Beta thalassemia"]
 
         result = {}
 

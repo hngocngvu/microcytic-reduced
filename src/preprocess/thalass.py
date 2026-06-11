@@ -1,8 +1,13 @@
 import pandas as pd
 import os
+import sys
 
 cwd= os.getcwd()
 BASE_DIR= cwd
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
+from src.functions.function import encode_dotbiengen
 
 data_thalass= os.path.join(BASE_DIR, "data", "thalass.xlsx")
 
@@ -28,18 +33,7 @@ def clean_thalass(df_thalass, cols):
         d["Tiền sử hoặc bệnh kèm theo"].astype(str).str.strip().ne("")
     )
 
-    alpha_pattern = r"sea|3\.7|4\.2|cd142"
-    beta_pattern = r"cd41[,;/ ]*42|cd17|cd26"
-
-    d["alpha_gen"] = (
-        d["Đột biến gen thalassemia"].str.contains(alpha_pattern, regex=True, na=False)
-    ).astype(int)
-
-    d["beta_gen"] = (
-        d["Đột biến gen thalassemia"].str.contains(beta_pattern, regex=True, na=False)
-    ).astype(int)
-
-    d = d.drop(columns=["Đột biến gen thalassemia"])
+    d = encode_dotbiengen(d)
 
 
     df_part = d.head(28)

@@ -1,4 +1,5 @@
 from sklearn.model_selection import cross_val_score, train_test_split, StratifiedKFold
+from sklearn.feature_selection import mutual_info_classif
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -39,6 +40,31 @@ class FeatureSelection():
         plt.show()
       
     
+    def get_features_mutual_info(self):
+        mi_scores = np.zeros(len(self.features))
+
+        for col in self.y_train.columns:
+            mi = mutual_info_classif(
+                self.X_train, self.y_train[col],
+                random_state=42, n_neighbors=5
+            )
+            mi_scores += mi
+
+        mi_scores /= len(self.y_train.columns)
+
+        mi_df = pd.DataFrame({
+            "feature": self.features,
+            "importance": mi_scores
+        })
+
+        mi_df = (
+            mi_df
+            .sort_values("importance", ascending=False)
+            .reset_index(drop=True)
+        )
+
+        return mi_df
+
     def get_features_permutation(self, n_repeats= 30, scoring= "f1_macro"):
         model= clone(self.model)
         model.fit(self.X_train, self.y_train)

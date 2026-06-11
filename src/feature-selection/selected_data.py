@@ -18,25 +18,35 @@ if __name__ == "__main__":
     )
 
     fs= FeatureSelection(X, y, model= rf)
-    
+
     corr_filter= fs.correlation_filter()
-    importance_df= fs.get_features_permutation()
 
-    results_df, best_k= fs.evaluate_k(importance_df) 
-    ranked_features= fs.features.iloc[:best_k]
-
-    print(importance_df)
-    print(results_df)
-    print(f"Best k: {best_k}")
-
-    fs.plot_elbow_method(importance_df)
-    fs.plot_elbow_method(importance_df)
-    fs.plot_k_performance(results_df)
+    print("PERMUTATION IMPORTANCE")
 
 
-    # final_df = df.drop(columns=["NEUTp", "LYMn", "LYMp"])
-    # final_df.to_csv(os.path.join(BASE_DIR, "data", "final.csv"), index=False)
+    perm_df= fs.get_features_permutation()
+    print(perm_df)
 
+    perm_results, perm_best_k= fs.evaluate_k(perm_df)
+    print(perm_results)
+    print(f"Best k (Permutation): {perm_best_k}")
 
+    fs.plot_permutation_importance(perm_df)
+    fs.plot_elbow_method(perm_df)
+    fs.plot_k_performance(perm_results)
 
+    print("MUTUAL INFORMATION")
 
+    mi_df= fs.get_features_mutual_info()
+    print(mi_df)
+
+    mi_results, mi_best_k= fs.evaluate_k(mi_df)
+    print(mi_results)
+    print(f"Best k (Mutual Info): {mi_best_k}")
+
+    fs.plot_permutation_importance(mi_df)
+    fs.plot_elbow_method(mi_df)
+    fs.plot_k_performance(mi_results)
+
+    print(f"Permutation Importance -> best k = {perm_best_k}, top features: {perm_df['feature'].head(perm_best_k).tolist()}")
+    print(f"Mutual Information     -> best k = {mi_best_k}, top features: {mi_df['feature'].head(mi_best_k).tolist()}")

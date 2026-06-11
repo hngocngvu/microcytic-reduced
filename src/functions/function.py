@@ -17,10 +17,16 @@ from sklearn.tree import DecisionTreeClassifier
 
 def make_pipeline(model, use_scaler= False):
 
-    if isinstance(model, RandomForestClassifier) or isinstance(model, DecisionTreeClassifier):
+    if isinstance(model, RandomForestClassifier):
         return Pipeline([
             ("clf", RandomForestClassifier(random_state=42))
         ])
+    
+    if isinstance(model, DecisionTreeClassifier):
+        return Pipeline([
+            ("clf", DecisionTreeClassifier(random_state=42))
+        ])
+    
 
     # KNN hỗ trợ multi-output sẵn nhưng cần scale
     if isinstance(model, KNeighborsClassifier):
@@ -161,6 +167,27 @@ def cal_tsat(fe, transferrin):
         return fe*100 / (transferrin * 0.179)
     except:
         return np.nan
+
+
+ALPHA_PATTERN = r"sea|3\.7|4\.2|cd142"
+BETA_PATTERN = r"cd41[,;/ ]*42|cd17|cd26"
+
+
+def encode_dotbiengen(df, col="Đột biến gen thalassemia"):
+    df["alpha_gen"] = df[col].str.contains(ALPHA_PATTERN, regex=True, na=False).astype(int)
+    df["beta_gen"] = df[col].str.contains(BETA_PATTERN, regex=True, na=False).astype(int)
+
+    return df.drop(columns=[col])
+
+
+def parse_dotbiengen(text):
+    import re
+    if not text or pd.isna(text):
+        return False, False
+    text_lower = str(text).lower()
+    gen_alpha = bool(re.search(ALPHA_PATTERN, text_lower))
+    gen_beta = bool(re.search(BETA_PATTERN, text_lower))
+    return gen_alpha, gen_beta
 
 
 def print_result(result):

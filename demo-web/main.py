@@ -14,7 +14,7 @@ if BASE_DIR not in sys.path:
 
 from src.dataclass.schema import Input, Config
 from src.models.classifier import Classifier
-from src.functions.function import input_field
+from src.functions.function import input_field, parse_dotbiengen
 from src.functions.utils import export_excel, export_word, export_pdf 
 from src.dataclass.schema import Patient, DiagnosisRecord
 from src.database.medical_database import MedicalDatabase
@@ -22,6 +22,7 @@ import datetime
 
 today = datetime.date.today()
 
+st.set_page_config(layout="wide")
 
 if "patient" not in st.session_state:
     st.session_state.patient = {}
@@ -31,7 +32,6 @@ page = st.sidebar.selectbox(
     ["Chẩn đoán", "Tìm kiếm bệnh nhân", "Xuất báo cáo"]
 )
 
-st.set_page_config(layout="wide")
 
 if page == "Chẩn đoán":
     st.markdown(
@@ -267,6 +267,8 @@ if page == "Chẩn đoán":
         p= st.session_state.patient
         config= Config()
 
+        gen_alpha, gen_beta = parse_dotbiengen(dotbiengen)
+
         patient= Input(gender= p.get("gender"),
         kinh_nguyet= kinh_nguyet,
         da_day= da_day,
@@ -298,6 +300,8 @@ if page == "Chẩn đoán":
         tsat= p.get("tsat"),
 
         dotbiengen= p.get("dotbiengen"),
+        gen_alpha= gen_alpha,
+        gen_beta= gen_beta,
         hba= p.get("hba"),
         hba2= p.get("hba2"),
         hbf= p.get("hbf"),

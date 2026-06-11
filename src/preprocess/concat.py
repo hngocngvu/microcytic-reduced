@@ -10,8 +10,8 @@ df_ida= pd.read_csv(os.path.join(BASE_DIR, "data", "final_ida.csv"))
 df_mix= pd.read_csv(os.path.join(BASE_DIR, "data", "final_mix.csv"))
 
 def convert_label(x):
-    if "Thalassemia" in str(x):
-        return "Thalassemia"
+    #if "Thalassemia" in str(x):
+        #return "Thalassemia"
     
     x = str(x).lower()
 

@@ -1,101 +1,69 @@
 import pandas as pd
 import os
 
-cwd= os.getcwd()
-BASE_DIR= cwd
+cwd = os.getcwd()
+BASE_DIR = cwd
 
 
-def clean_acd_1(df_acd):
-    a= df_acd.drop(["Mã bệnh nhân"], axis=1)
-    a["Tiền sử hoặc bệnh kèm theo"]= True 
-    b= a.rename(columns={
-    "Họ và tên": "Giới",
-    "Hb (g/l)": "Hb"
-    })
+def _label_diagnoses(df):
+    original = df["Chẩn đoán"]
+    df["Chẩn đoán"] = "ACD"
+
+    df.loc[original.str.contains("thiếu máu thiếu sắt", case=False, na=False),
+           "Chẩn đoán"] += ", IDA"
+
+    df.loc[original.str.contains("beta thalassemia", case=False, na=False),
+           "Chẩn đoán"] += ", Beta thalassemia"
+
+    df.loc[original.str.contains("alpha thalassemia", case=False, na=False),
+           "Chẩn đoán"] += ", Alpha thalassemia"
+
+    return df
 
 
-    original = b["Chẩn đoán"]
-    b["Chẩn đoán"] = "ACD"
+def clean_acd(df_acd, drop_col, rename_map, gender=None):
+    a = df_acd.drop([drop_col], axis=1)
+    a["Tiền sử hoặc bệnh kèm theo"] = True
+    b = a.rename(columns=rename_map)
 
-    b.loc[original.str.contains("thiếu máu thiếu sắt", case=False, na=False),
-    "Chẩn đoán"] += ", IDA"
+    if gender is not None:
+        b["Giới"] = gender
 
-
-    b.loc[original.str.contains("beta thalassemia", case=False, na=False),
-    "Chẩn đoán"] += ", Beta thalassemia"
-
-    b.loc[original.str.contains("alpha thalassemia", case=False, na=False),
-    "Chẩn đoán"] += ", Alpha thalassemia"
-
+    b = _label_diagnoses(b)
     return b
 
-def clean_acd_2(df_acd):
-    a= df_acd.drop(["Mã điều trị"], axis=1)
-    a["Tiền sử hoặc bệnh kèm theo"]= True 
-    b= a.rename(columns={
-    "Hb (g/l)": "Hb"
-    })
-
-    b["Giới"]= "Nam"
-
-
-    
-    original = b["Chẩn đoán"]
-    b["Chẩn đoán"] = "ACD"
-
-    b.loc[original.str.contains("thiếu máu thiếu sắt", case=False, na=False),
-    "Chẩn đoán"] += ", IDA"
-
-
-    b.loc[original.str.contains("beta thalassemia", case=False, na=False),
-    "Chẩn đoán"] += ", Beta thalassemia"
-
-    b.loc[original.str.contains("alpha thalassemia", case=False, na=False),
-    "Chẩn đoán"] += ", Alpha thalassemia"
-
-    return b
-
-def clean_acd_3(df_acd):
-    a= df_acd.drop(["Mã điều trị"], axis=1)
-    a["Tiền sử hoặc bệnh kèm theo"]= True 
-    b= a.rename(columns={
-    "Hb (g/l)": "Hb"
-    })
-
-    b["Giới"]= "Nữ"
-    original = b["Chẩn đoán"]
-    b["Chẩn đoán"] = "ACD"
-
-    b.loc[original.str.contains("thiếu máu thiếu sắt", case=False, na=False),
-    "Chẩn đoán"] += ", IDA"
-
-
-    b.loc[original.str.contains("beta thalassemia", case=False, na=False),
-    "Chẩn đoán"] += ", Beta thalassemia"
-
-    b.loc[original.str.contains("alpha thalassemia", case=False, na=False),
-    "Chẩn đoán"] += ", Alpha thalassemia"
-
-    return b
 
 if __name__ == "__main__":
-    data_acd= os.path.join(BASE_DIR, "data", "acd.xlsx")
-    data_acd_2= os.path.join(BASE_DIR, "data", "acd_2.xlsx")
-    data_acd_3= os.path.join(BASE_DIR, "data", "acd_3.xlsx")
+    configs = [
+        {
+            "path": os.path.join(BASE_DIR, "data", "acd.xlsx"),
+            "drop_col": "Mã bệnh nhân",
+            "rename_map": {"Họ và tên": "Giới", "Hb (g/l)": "Hb"},
+            "gender": None,
+        },
+        {
+            "path": os.path.join(BASE_DIR, "data", "acd_2.xlsx"),
+            "drop_col": "Mã điều trị",
+            "rename_map": {"Hb (g/l)": "Hb"},
+            "gender": "Nam",
+        },
+        {
+            "path": os.path.join(BASE_DIR, "data", "acd_3.xlsx"),
+            "drop_col": "Mã điều trị",
+            "rename_map": {"Hb (g/l)": "Hb"},
+            "gender": "Nữ",
+        },
+    ]
 
-    df_acd_1= pd.read_excel(data_acd)
-    df_acd_2= pd.read_excel(data_acd_2)
-    df_acd_3= pd.read_excel(data_acd_3)
+    frames = []
+    for cfg in configs:
+        df = pd.read_excel(cfg["path"])
+        cleaned = clean_acd(df, cfg["drop_col"], cfg["rename_map"], cfg["gender"])
+        frames.append(cleaned)
 
-    final_acd_1= clean_acd_1(df_acd_1)
-    final_acd_2= clean_acd_2(df_acd_2)
-    final_acd_3= clean_acd_3(df_acd_3)
-
-    final_acd= pd.concat([final_acd_1, final_acd_2, final_acd_3], ignore_index=True)
-
+    final_acd = pd.concat(frames, ignore_index=True)
     final_acd.to_csv(os.path.join(BASE_DIR, "data", "final_acd.csv"), index=False)
-    
+
     print(final_acd.head())
     print(final_acd.shape)
     final_acd.info()
-

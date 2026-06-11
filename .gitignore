@@ -13,3 +13,5 @@ png/
 *.png
 
 *.csv
+
+.thesis/

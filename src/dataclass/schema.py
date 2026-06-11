@@ -34,7 +34,9 @@ class Input():
     tsat: Optional[float]=  None
     crp: Optional[float]=  None 
 
-    dotbiengen: Optional[bool]= False
+    dotbiengen: Optional[str]= False
+    gen_alpha: Optional[bool]= False
+    gen_beta: Optional[bool]= False
     hba: Optional[float]=  None 
     hba2: Optional[float]=  None 
     hbf: Optional[float]=  None 
