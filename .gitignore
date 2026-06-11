@@ -15,3 +15,5 @@ png/
 *.csv
 
 .thesis/
+
+catboost_info/
