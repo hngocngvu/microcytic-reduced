@@ -160,6 +160,10 @@ class ModelFactory():
             
             cv_mean_f1 = search.best_score_
             cv_std_f1 = search.cv_results_['std_test_score'][search.best_index_]
+            cv_fold_scores = [
+                search.cv_results_[f'split{i}_test_score'][search.best_index_]
+                for i in range(cv_strategy.get_n_splits())
+            ]
             
         else:
             cv_scores = cross_val_score(
@@ -172,6 +176,7 @@ class ModelFactory():
             )
             cv_mean_f1 = cv_scores.mean()
             cv_std_f1 = cv_scores.std()
+            cv_fold_scores = cv_scores.tolist()
             
             model.fit(X_train, y_train)
             best_model = model
@@ -208,6 +213,7 @@ class ModelFactory():
             "hamming_loss": hamming,
             "cv_mean_f1": cv_mean_f1,
             "cv_std_f1": cv_std_f1,
+            "cv_fold_scores": cv_fold_scores,
             "training_time_sec": training_time,
             "report": classification_report(y_test, y_pred, target_names=["ACD", "IDA", "Alpha thalassemia" ,"Beta thalassemia"], digits=4),
             "saved_model": model_filename

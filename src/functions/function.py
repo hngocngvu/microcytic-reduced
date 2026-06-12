@@ -197,7 +197,7 @@ def print_result(result):
     print(f"F1-micro: {result['f1_micro']:.4f}")
     print(f"Hamming Loss: {result['hamming_loss']:.4f}")
     print(f"Jaccard Score: {result['jaccard_score']:.4f}")
-    
+
     print(f"CV F1: {float(result['cv_mean_f1']):.4f} ± {float(result['cv_std_f1']):.4f}")
     print(f"Training time: {result['training_time_sec']:.2f} sec")
 
@@ -205,6 +205,45 @@ def print_result(result):
     print(result["report"])
 
     print(f"Saved model    : {result['saved_model']}")
+
+
+def friedman_compare(results_dict):
+    from scipy.stats import friedmanchisquare
+    import scikit_posthocs as sp
+
+    names = list(results_dict.keys())
+    scores = list(results_dict.values())
+
+    min_len = min(len(s) for s in scores)
+    scores = [s[:min_len] for s in scores]
+
+    stat, p = friedmanchisquare(*scores)
+
+    print(f"Friedman chi2={stat:.4f}, p={p:.6f}")
+
+    if p < 0.05:
+        print("Significant difference found → Nemenyi post-hoc:\n")
+        df_scores = pd.DataFrame(dict(zip(names, scores)))
+        nemenyi = sp.posthoc_nemenyi_friedman(df_scores)
+        print(nemenyi.round(4))
+
+        sig_pairs = []
+        for i in range(len(nemenyi.index)):
+            for j in range(i + 1, len(nemenyi.columns)):
+                g1, g2 = nemenyi.index[i], nemenyi.columns[j]
+                pv = nemenyi.iloc[i, j]
+                if pv < 0.05:
+                    star = "***" if pv < 0.001 else "**" if pv < 0.01 else "*"
+                    sig_pairs.append(f"  {g1} vs {g2}: p={pv:.6f} {star}")
+
+        if sig_pairs:
+            print("\nSignificant pairs:")
+            for pair in sig_pairs:
+                print(pair)
+    else:
+        print("No significant difference between models.")
+
+    return stat, p
 
 
 

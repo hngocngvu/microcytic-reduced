@@ -1,4 +1,4 @@
-from sklearn.model_selection import cross_val_score, train_test_split, StratifiedKFold
+from sklearn.model_selection import cross_val_score
 from sklearn.feature_selection import mutual_info_classif
 import pandas as pd
 import numpy as np
@@ -6,7 +6,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.inspection import permutation_importance
 from sklearn.base import clone
-from iterstrat.ml_stratifiers import MultilabelStratifiedShuffleSplit
+from iterstrat.ml_stratifiers import MultilabelStratifiedShuffleSplit, MultilabelStratifiedKFold
 
 
 class FeatureSelection():
@@ -150,7 +150,7 @@ class FeatureSelection():
         model= clone(self.model)
         results = []
 
-        skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+        skf = MultilabelStratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
         for k in k_range:
             selected_features = ranked_features['feature'].head(k).tolist()
