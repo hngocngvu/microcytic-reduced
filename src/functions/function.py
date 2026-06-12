@@ -183,7 +183,7 @@ def encode_dotbiengen(df, col="Đột biến gen thalassemia"):
 def parse_dotbiengen(text):
     import re
     if not text or pd.isna(text):
-        return False, False
+        return pd.NA, pd.NA
     text_lower = str(text).lower()
     gen_alpha = bool(re.search(ALPHA_PATTERN, text_lower))
     gen_beta = bool(re.search(BETA_PATTERN, text_lower))
