@@ -28,7 +28,7 @@ if __name__ == "__main__":
     model_name = args.model_name
 
     # df = pd.read_excel("data/anemia-data.xlsx")
-    df= pd.read_csv("data/concat.csv")
+    df= pd.read_csv("data/reduced_features.csv")
     
     print(df.head())
 
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     
 
     df_test = df.loc[test_idx]
-    df_test.to_csv("data/test_data.csv", index=False)
+    df_test.to_csv("data/reduced_test_data.csv", index=False)
 
     factory = ModelFactory(model_name)
     results = factory.train_and_evaluate(X_train, y_train, X_test, y_test)

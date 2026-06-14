@@ -37,7 +37,7 @@ models_config = {
         DecisionTreeClassifier(random_state=42)
     ),
     "params": {
-        "clf__max_depth": [3, 5, None]
+        "clf__max_depth": [3, 5]
     }
 },
 
@@ -45,7 +45,7 @@ models_config = {
         "model": make_pipeline(RandomForestClassifier(random_state=42)),
         "params": {
             "clf__n_estimators": [100, 200],
-            "clf__max_depth": [5, 10]
+            "clf__max_depth": [3, 5]
         }
     },
 
@@ -63,9 +63,9 @@ models_config = {
         "model": make_pipeline(LGBMClassifier(random_state=42, verbose=-1)),
 
         "params": {
-            "clf__estimator__n_estimators": [100],
-            "clf__estimator__learning_rate": [0.05],
-            "clf__estimator__max_depth": [-1, 5]
+            "clf__estimator__n_estimators": [100, 200],
+            "clf__estimator__learning_rate": [0.05, 0.1],
+            "clf__estimator__max_depth": [3, 5]
         }
     },
 
@@ -219,7 +219,7 @@ class ModelFactory():
             "saved_model": model_filename
         }
     
-    def explain_with_shap(self, X_test, feature_names, trained_model, save_dir="notebooks/png"):
+    def explain_with_shap(self, X_test, feature_names, trained_model, save_dir="notebooks/png/shap"):
             """
             Generate SHAP explanations for tree-based models.
             For MultiOutputClassifier, we explain each output separately.
