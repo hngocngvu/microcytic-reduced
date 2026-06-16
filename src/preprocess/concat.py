@@ -85,6 +85,7 @@ def clean_concat(df):
     df = pd.get_dummies(df, columns=["Giới"], drop_first=True)
 
     df["TSAT (%)"] = df["TSAT (%)"].round(1)
+    df = df.drop_duplicates()
 
     return df
 
