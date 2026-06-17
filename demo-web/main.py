@@ -16,8 +16,8 @@ from src.dataclass.schema import Input, Config
 from src.models.classifier import Classifier
 from src.functions.function import input_field, parse_dotbiengen
 from src.functions.utils import export_excel, export_word, export_pdf 
-from src.dataclass.schema import Patient, DiagnosisRecord
-from src.database.medical_database import MedicalDatabase
+#from src.dataclass.schema import Patient, DiagnosisRecord
+#from src.database.medical_database import MedicalDatabase
 import datetime
 
 today = datetime.date.today()
@@ -63,10 +63,12 @@ if page == "Chẩn đoán":
                 "hba2": row["HbA2"],
                 "hbf": row["HbF"],
                 "hbh": row["HbH"],
+                "hbs": row["HbS"],
+                "hbe": row["HbE"],
+                "hbbart": row["HbBart"],
                 "hb_other": row["Hb khác"],
                 #"dotbiengen": row["Đột biến gen thalassemia"],
                 "tsat": row["TSAT (%)"],
-                "mch": row["MCH"],
             })
 
         st.success("Đã load file CSV!")
@@ -88,13 +90,13 @@ if page == "Chẩn đoán":
             kinh_nguyet = False
             pregnant = False
 
-    with c2:
-        phone_number= st.text_input("Số điện thoại liên hệ")
-        address= st.text_input("Địa chỉ")
+    # with c2:
+    #     phone_number= st.text_input("Số điện thoại liên hệ")
+    #     address= st.text_input("Địa chỉ")
 
-    with c3:
-        patient_id= st.text_input("Mã số bệnh nhân")
-        record_id= st.text_input("Mã số hồ sơ")
+    # with c3:
+    #     patient_id= st.text_input("Mã số bệnh nhân")
+    #     record_id= st.text_input("Mã số hồ sơ")
 
     dob_str = dob.isoformat()
 
@@ -326,152 +328,148 @@ if page == "Chẩn đoán":
 
         #st.info(result.reasons)
 
-        """
-        info= Patient(id= patient_id, full_name= full_name,
-                        dob= dob_str, gender= gender, 
-                        phone_number= phone_number, address= address
-                        )
-        record= DiagnosisRecord(
-                id= record_id, patient_id= patient_id,
-                kinh_nguyet= kinh_nguyet, da_day= da_day,
-                tri= tri, pregnant= pregnant, diet= diet,
-                man_tinh= man_tinh, cancer= cancer, phau_thuat= phau_thuat,
-                rbc= rbc, hb=hb, mcv= mcv, mchc= mchc, rdw= rdw, ret_he= ret_he,
-                fe= fe, ferritin= ferritin, transferrin= transferrin,
-                tibc= tibc, #stfr= stfr,
-                crp= crp, dotbiengen= dotbiengen,
-                hba= hba, hba2= hba2, hbf= hbf, hbh= hbh, hbe= hbe, 
-                #hbc= hbc,
-                hbs= hbs, hbbart= hbbart, hb_other= hb_other, 
-                diagnoses= result.diagnoses
-            )
-        db= MedicalDatabase()
-        db.create_tables()
-        db.add_patient(info)
-        db.add_record(record)
-        st.success("Đã lưu hồ sơ bệnh nhân thành công")
+#         info= Patient(id= patient_id, full_name= full_name,
+#                         dob= dob_str, gender= gender, 
+#                         phone_number= phone_number, address= address
+#                         )
+#         record= DiagnosisRecord(
+#                 id= record_id, patient_id= patient_id,
+#                 kinh_nguyet= kinh_nguyet, da_day= da_day,
+#                 tri= tri, pregnant= pregnant, diet= diet,
+#                 man_tinh= man_tinh, cancer= cancer, phau_thuat= phau_thuat,
+#                 rbc= rbc, hb=hb, mcv= mcv, mchc= mchc, rdw= rdw, ret_he= ret_he,
+#                 fe= fe, ferritin= ferritin, transferrin= transferrin,
+#                 tibc= tibc, #stfr= stfr,
+#                 crp= crp, dotbiengen= dotbiengen,
+#                 hba= hba, hba2= hba2, hbf= hbf, hbh= hbh, hbe= hbe, 
+#                 #hbc= hbc,
+#                 hbs= hbs, hbbart= hbbart, hb_other= hb_other, 
+#                 diagnoses= result.diagnoses
+#             )
+#         db= MedicalDatabase()
+#         db.create_tables()
+#         db.add_patient(info)
+#         db.add_record(record)
+#         st.success("Đã lưu hồ sơ bệnh nhân thành công")
 
-"""
-"""
-if page == "Tìm kiếm bệnh nhân":
-    db= MedicalDatabase()
 
-    st.markdown(
-        "<h1 style='text-align: center;'>Tìm kiếm bệnh nhân</h1>",
-        unsafe_allow_html=True
-    )
-    value = st.text_input("Nhập giá trị tìm kiếm")
+# if page == "Tìm kiếm bệnh nhân":
+#     db= MedicalDatabase()
 
-    search_button = st.button("Search")
+#     st.markdown(
+#         "<h1 style='text-align: center;'>Tìm kiếm bệnh nhân</h1>",
+#         unsafe_allow_html=True
+#     )
+#     value = st.text_input("Nhập giá trị tìm kiếm")
 
-    if search_button and value:
+#     search_button = st.button("Search")
 
-        results = db.search_by_field(value)
+#     if search_button and value:
 
-        if not results:
-            st.warning("Không tìm thấy kết quả")
-        else:
-            st.success(f"Tìm thấy {len(results)} kết quả")
-            # st.write(results)
+#         results = db.search_by_field(value)
 
-            for r in results:
+#         if not results:
+#             st.warning("Không tìm thấy kết quả")
+#         else:
+#             st.success(f"Tìm thấy {len(results)} kết quả")
+#             # st.write(results)
 
-                with st.expander(f"{r['full_name']}  |  Mã số hồ sơ: {r['record_id']}"):
+#             for r in results:
 
-                    col1, col2 = st.columns(2)
+#                 with st.expander(f"{r['full_name']}  |  Mã số hồ sơ: {r['record_id']}"):
 
-                    with col1:
-                        st.write("Thông tin bệnh nhân")
-                        st.write("Mã số bệnh nhân:", r['patient_id'])
-                        st.write("Ngày sinh:", r["dob"])
-                        st.write("Giới tính:", r["gender"])
-                        st.write("SĐT:", r["phone_number"])
-                        st.write("Địa chỉ:", r["address"])
+#                     col1, col2 = st.columns(2)
 
-                    with col2:
-                        st.write("Kết quả chẩn đoán")
-                        st.write("Chẩn đoán:", r["diagnoses"])
-                        st.write("Nguyên nhân và gợi ý:", r["reasons"])
+#                     with col1:
+#                         st.write("Thông tin bệnh nhân")
+#                         st.write("Mã số bệnh nhân:", r['patient_id'])
+#                         st.write("Ngày sinh:", r["dob"])
+#                         st.write("Giới tính:", r["gender"])
+#                         st.write("SĐT:", r["phone_number"])
+#                         st.write("Địa chỉ:", r["address"])
 
-if page == "Xuất báo cáo":
-    st.markdown(
-        "<h1 style='text-align: center;'>Xuất thông tin và báo cáo</h1>",
-        unsafe_allow_html=True
-    )
+#                     with col2:
+#                         st.write("Kết quả chẩn đoán")
+#                         st.write("Chẩn đoán:", r["diagnoses"])
 
-    db = MedicalDatabase()
-    record_id = st.text_input("Nhập mã hồ sơ", key="input_record_id")
+# if page == "Xuất báo cáo":
+#     st.markdown(
+#         "<h1 style='text-align: center;'>Xuất thông tin và báo cáo</h1>",
+#         unsafe_allow_html=True
+#     )
 
-    # Khởi tạo session state
-    if 'loaded_record' not in st.session_state:
-        st.session_state.loaded_record = None
-        st.session_state.excel_bytes = None
-        st.session_state.word_bytes = None
-        st.session_state.pdf_bytes = None
+#     db = MedicalDatabase()
+#     record_id = st.text_input("Nhập mã hồ sơ", key="input_record_id")
 
-    # Nút tải thông tin
-    if st.button("Tải thông tin", key="btn_load"):
-        record = db.get_record_by_id(record_id)
+#     # Khởi tạo session state
+#     if 'loaded_record' not in st.session_state:
+#         st.session_state.loaded_record = None
+#         st.session_state.excel_bytes = None
+#         st.session_state.word_bytes = None
+#         st.session_state.pdf_bytes = None
+
+#     # Nút tải thông tin
+#     if st.button("Tải thông tin", key="btn_load"):
+#         record = db.get_record_by_id(record_id)
         
-        if record is None:
-            st.error("Không tìm thấy hồ sơ")
-            st.session_state.loaded_record = None
-        else:
-            st.session_state.loaded_record = record
-            # Tạo file ngay khi tải thông tin
-            try:
-                st.session_state.excel_bytes = export_excel(record)
-                st.session_state.word_bytes = export_word(record)
-                st.session_state.pdf_bytes = export_pdf(record)
-                st.success("Đã tải thông tin và tạo file thành công!")
-            except Exception as e:
-                st.error(f"Lỗi tạo file: {str(e)}")
+#         if record is None:
+#             st.error("Không tìm thấy hồ sơ")
+#             st.session_state.loaded_record = None
+#         else:
+#             st.session_state.loaded_record = record
+#             # Tạo file ngay khi tải thông tin
+#             try:
+#                 st.session_state.excel_bytes = export_excel(record)
+#                 st.session_state.word_bytes = export_word(record)
+#                 st.session_state.pdf_bytes = export_pdf(record)
+#                 st.success("Đã tải thông tin và tạo file thành công!")
+#             except Exception as e:
+#                 st.error(f"Lỗi tạo file: {str(e)}")
 
-    # Hiển thị thông tin và download buttons (không nằm trong if st.button nữa)
-    if st.session_state.loaded_record:
-        record = st.session_state.loaded_record
+#     # Hiển thị thông tin và download buttons (không nằm trong if st.button nữa)
+#     if st.session_state.loaded_record:
+#         record = st.session_state.loaded_record
         
-        st.subheader("Thông tin bệnh nhân")
-        st.write("Họ và tên:", record["full_name"])
-        st.write("Ngày sinh:", record["dob"])
-        st.write("Giới tính:", record["gender"])
-        st.write("SĐT:", record["phone_number"])
-        st.write("Địa chỉ:", record["address"])
-        st.write("Mã bệnh nhân:", record["patient_id"])
-        st.write("Chẩn đoán:", record["diagnoses"])
-        st.write("Nguyên nhân và gợi ý:", record["reasons"])
+#         st.subheader("Thông tin bệnh nhân")
+#         st.write("Họ và tên:", record["full_name"])
+#         st.write("Ngày sinh:", record["dob"])
+#         st.write("Giới tính:", record["gender"])
+#         st.write("SĐT:", record["phone_number"])
+#         st.write("Địa chỉ:", record["address"])
+#         st.write("Mã bệnh nhân:", record["patient_id"])
+#         st.write("Chẩn đoán:", record["diagnoses"])
+#         st.write("Nguyên nhân và gợi ý:", record["reasons"])
 
-        st.subheader("Chỉ số xét nghiệm")
-        df = pd.DataFrame([record])
-        st.dataframe(df)
-        st.divider()
+#         st.subheader("Chỉ số xét nghiệm")
+#         df = pd.DataFrame([record])
+#         st.dataframe(df)
+#         st.divider()
 
-        col1, col2, col3 = st.columns(3)
+#         col1, col2, col3 = st.columns(3)
 
-        with col1:
-            st.download_button(
-                label="Xuất Excel",
-                data=st.session_state.excel_bytes,
-                file_name=f"diagnosis_{record_id}.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                key="download_excel"
-            )
+#         with col1:
+#             st.download_button(
+#                 label="Xuất Excel",
+#                 data=st.session_state.excel_bytes,
+#                 file_name=f"diagnosis_{record_id}.xlsx",
+#                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+#                 key="download_excel"
+#             )
 
-        with col2:
-            st.download_button(
-                label="Xuất Word", 
-                data=st.session_state.word_bytes,
-                file_name=f"diagnosis_{record_id}.docx",
-                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                key="download_word"
-            )
+#         with col2:
+#             st.download_button(
+#                 label="Xuất Word", 
+#                 data=st.session_state.word_bytes,
+#                 file_name=f"diagnosis_{record_id}.docx",
+#                 mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+#                 key="download_word"
+#             )
 
-        with col3:
-            st.download_button(
-                label="Xuất PDF",
-                data=st.session_state.pdf_bytes,
-                file_name=f"diagnosis_{record_id}.pdf",
-                mime="application/pdf",
-                key="download_pdf"
-            )
-"""
+#         with col3:
+#             st.download_button(
+#                 label="Xuất PDF",
+#                 data=st.session_state.pdf_bytes,
+#                 file_name=f"diagnosis_{record_id}.pdf",
+#                 mime="application/pdf",
+#                 key="download_pdf"
+#             )
