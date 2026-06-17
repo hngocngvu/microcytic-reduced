@@ -23,8 +23,7 @@ class Input():
     mchc: Optional[float]=  None 
     rdw: Optional[float]=  None
     ret_he: Optional[float]=  None
-    # pcv: Optional[float]= None
-    mch: Optional[float]= None
+
 
     fe: Optional[float]=  None 
     ferritin: Optional[float]=  None 
@@ -34,9 +33,9 @@ class Input():
     tsat: Optional[float]=  None
     crp: Optional[float]=  None 
 
-    dotbiengen: Optional[str]= False
-    gen_alpha: Optional[bool]= False
-    gen_beta: Optional[bool]= False
+    #dotbiengen: Optional[str]= None
+    #gen_alpha: Optional[bool]= False
+    #gen_beta: Optional[bool]= False
     hba: Optional[float]=  None 
     hba2: Optional[float]=  None 
     hbf: Optional[float]=  None 
@@ -59,25 +58,14 @@ class Output():
 class Config():
     # weights: dict= field(default_factory= lambda: {})
     thres: dict= field(default_factory= lambda: {
-        # 'hb': {"pregnant": 110, 
-                #"nữ": 120, 
-                #"nam": 130}, #thresholds cho PN có thai, nữ và nam
+        'hb': {
+                "Nữ": 120, 
+                "Nam": 130},
 
         'ferritin': [30, 100],
-        #'rdw': 0.15,
-        #'mentzer': 13,
-        'hbbart':1,
-        'hbh': 1,
-        'hba': [96.5, 98],
-        'hba2': [2, 3.5],
-        'hbf': 1,
-        #'hbe': 0,
-        #'hbs': 0,
-        #'hbc': 0,
-        #'hb_other': 0,
-        'tsat': 20,
-        'crp': 5,
-        'fe': 5.8,
+
+        'tsat': 16,
+        'crp': 10,
         'mcv': 80
         # 'stfr_fer_idx' : [1, 2]
     })
@@ -85,10 +73,10 @@ class Config():
     labels= [
             "IDA",
             "ACD",
-            'Alpha thalassemia',
-            'Beta thalassemia'
+            "IDA, ACD"
             ]
 
+"""
 @dataclass
 class Patient:
     id: str
@@ -127,18 +115,6 @@ class DiagnosisRecord:
     #stfr: Optional[float]=  None 
     crp: Optional[float]=  None 
 
-    dotbiengen: Optional[str]= None
-    hba: Optional[float]=  None 
-    hba2: Optional[float]=  None 
-    hbf: Optional[float]=  None 
-    hbh: Optional[float]=  None 
-    hbe: Optional[float]=  None 
-    #hbc: Optional[float]=  None 
-    hbs: Optional[float]=  None
-    hbbart: Optional[float]=  None 
-    hb_other: Optional[float]=  None 
-
-
     diagnoses: Optional[str]= None
-    reasons: Optional[str|None]= None
-
+    #reasons: Optional[str|None]= None
+"""

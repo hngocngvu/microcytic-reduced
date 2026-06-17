@@ -23,14 +23,14 @@ def convert_label(x):
     if "ida" in x:
         labels.append("IDA")
 
-    elif "beta thalassemia" in x:
-        labels.append("Beta thalassemia")
+    #elif "beta thalassemia" in x:
+        #labels.append("Beta thalassemia")
 
-    elif "alpha thalassemia" in x:
-        labels.append("Alpha thalassemia")
+    #elif "alpha thalassemia" in x:
+        #labels.append("Alpha thalassemia")
 
-    elif "crnn" in x:
-        labels.append("CRNN")
+    #elif "crnn" in x:
+        #labels.append("CRNN")
     
     if len(labels) == 0:
         return "None"
@@ -58,8 +58,8 @@ def clean_concat(df):
 
     df["ACD"] = df["Chẩn đoán"].str.contains("ACD", na=False).astype(int)
     df["IDA"] = df["Chẩn đoán"].str.contains("IDA", na=False).astype(int)
-    df["Alpha thalassemia"] = df["Chẩn đoán"].str.contains("alpha thalassemia", case=False, na=False).astype(int)
-    df["Beta thalassemia"] = df["Chẩn đoán"].str.contains("beta thalassemia", case=False, na=False).astype(int)
+    #df["Alpha thalassemia"] = df["Chẩn đoán"].str.contains("alpha thalassemia", case=False, na=False).astype(int)
+    #df["Beta thalassemia"] = df["Chẩn đoán"].str.contains("beta thalassemia", case=False, na=False).astype(int)
 
 
     for i, row in df.iterrows():
@@ -81,7 +81,7 @@ def clean_concat(df):
     df = df.apply(normalize_missing_values)
 
     df["Giới"] = df["Giới"].str.strip().str.lower()
-    df= df.drop(columns= ["Tuổi", "cân nặng", "chiều cao"])
+    df= df.drop(columns= ["Tuổi", "cân nặng", "chiều cao", "Đột biến gen thalassemia"])
     df = pd.get_dummies(df, columns=["Giới"], drop_first=True)
 
     df["TSAT (%)"] = df["TSAT (%)"].round(1)
@@ -92,7 +92,7 @@ def clean_concat(df):
 
 if __name__ == "__main__":
     
-    df= pd.concat([df_acd, df_thalass, df_ida], axis=0)
+    df= pd.concat([df_acd, df_mix, df_ida], axis=0)
 
 
     df_new = clean_concat(df)

@@ -28,56 +28,42 @@ class Classifier():
 
         reasons= []
         diagnoses= []
-        tsat= pd.NA
+        data.tsat= pd.NA
 
         #data.gender= clean_text(data.gender)
         #if data.gender == "nữ" and data.pregnant is True:
             #data.gender= "pregnant"
 
-        FIELDS = ["mcv", "crp", "ferritin", "transferrin", "hbbart", "hba2", "hbh", "hbf", "fe"]
+        FIELDS = ["hb", "mcv", "ferritin", "transferrin", "fe", "crp"]
 
         if not pd.isna(data.fe) and not pd.isna(data.transferrin) and data.transferrin != 0:
-            tsat= cal_tsat(data.fe, data.transferrin)
+            data.tsat= cal_tsat(data.fe, data.transferrin)
             # mentzer= cal_mentzer(data.mcv, data.rbc)
 
-        if any(not pd.isna(getattr(data, f)) for f in FIELDS):
+        if data.gender is not None and data.hb < thres["hb"][data.gender]:
             if not pd.isna(data.mcv) and data.mcv < thres['mcv']:
-                if not pd.isna(data.ferritin) and data.ferritin < thres['ferritin'][0]:
+                if not (pd.isna(data.tsat) and pd.isna(data.crp) and pd.isna(data.ferritin)):
+                    if data.tsat < thres['tsat'] and data.ferritin < thres['ferritin'][0] and data.crp < thres['crp']:
+                        diagnoses= labels[0]
+                    elif data.tsat >= thres['tsat'] and data.ferritin >= thres['ferritin'][1] and data.crp >= thres['crp']:
+                        diagnoses= labels[1]
 
-                    d2, r1= diendihst(data, thres, labels)
-                    diagnoses.append(d2)
-                    reasons.append(r1)
+                    elif data.tsat < thres['tsat'] and data.ferritin < thres['ferritin'][1] and data.crp >= thres['crp']:
+                        diagnoses= labels[2]
 
-                elif not pd.isna(data.ferritin) and data.ferritin > thres['ferritin'][1]:
-                    d3= ""
-                    if (not pd.isna(data.crp) and data.crp > thres['crp'] and not pd.isna(data.fe) and data.fe < thres['fe']) and (not pd.isna(tsat) and tsat < thres['tsat']):
-                        d3= labels[1]
-                    else:
-                        d3, r2= diendihst(data, thres, labels)
-                        reasons.append(r2)
-        
-                    diagnoses.append(d3)
-                
-                else:
-                    d4= ""
-                    if not pd.isna(tsat) and tsat < thres['tsat']: 
-                        d4= labels[0]
-                    else:
-                        d4, r3= diendihst(data, thres, labels)
-                        reasons.append(r3)
-                    diagnoses.append(d4)
+        else: diagnoses= "None"
 
         diagnoses= [clean_cham(d) for d in diagnoses]
-        reasons = [clean_cham(r) for r in reasons]
+        #reasons = [clean_cham(r) for r in reasons]
 
-        concat_diagnoses= join_text(diagnoses)
-        concat_reasons= join_text(reasons)
+        #concat_diagnoses= join_text(diagnoses)
+        #concat_reasons= join_text(reasons)
         
-        concat_diagnoses= clean_phay(concat_diagnoses)
-        concat_reasons= clean_phay(concat_reasons)
+        #concat_diagnoses= clean_phay(concat_diagnoses)
+        #concat_reasons= clean_phay(concat_reasons)
 
         
-        return Output(diagnoses= concat_diagnoses, reasons= concat_reasons)
+        return Output(diagnoses= diagnoses) #reasons= concat_reasons)
     
     def ml_classify(self):
 
@@ -91,7 +77,7 @@ class Classifier():
         gender = 0 if self.data.gender == "Nữ" else 1
 
         data = np.array([[
-            self.data.age,
+            #self.data.age,
             self.data.man_tinh,
             self.data.rbc,
             self.data.hb,
@@ -112,16 +98,16 @@ class Classifier():
             self.data.hbs,
             self.data.hbe,
             self.data.hb_other,
-            self.data.dotbiengen,
+            #self.data.dotbiengen,
             self.data.tsat,
-            self.data.mch,
+            #self.data.mch,
             gender
         ]])
 
         # predict
         probs = model.predict_proba(data)
 
-        labels = ["ACD", "IDA", "Alpha thalassemia", "Beta thalassemia"]
+        labels = ["ACD", "IDA"]
 
         result = {}
 

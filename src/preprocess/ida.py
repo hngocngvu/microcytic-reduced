@@ -62,7 +62,7 @@ def clean_ida(df, text_cols):
 
 
 
-    d = encode_dotbiengen(d)
+    #d = encode_dotbiengen(d)
 
     d["Chẩn đoán"]= "IDA"
 
@@ -70,7 +70,7 @@ def clean_ida(df, text_cols):
 
     original_ida= d["nguyên nhân thiếu sắt"]
 
-    d.loc[original_ida.str.contains(r"viêm|ung thư|loét", case=False, na=False),
+    d.loc[original_ida.str.contains(r"viêm|ung thư|mạn tính", case=False, na=False),
     "Chẩn đoán"] += ", ACD"
 
     d = d.drop(columns=["nguyên nhân thiếu sắt"])

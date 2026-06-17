@@ -32,22 +32,6 @@ from sklearn.metrics import make_scorer, f1_score
 from sklearn.tree import DecisionTreeClassifier
 
 models_config = {
-    "DT": {
-    "model": make_pipeline(
-        DecisionTreeClassifier(random_state=42)
-    ),
-    "params": {
-        "clf__max_depth": [3, 5]
-    }
-},
-
-    "RF": {
-        "model": make_pipeline(RandomForestClassifier(random_state=42)),
-        "params": {
-            "clf__n_estimators": [100, 200],
-            "clf__max_depth": [3, 5]
-        }
-    },
 
     "XGBoost": {
         "model": make_pipeline(XGBClassifier(eval_metric='logloss', random_state=42)),
@@ -77,35 +61,6 @@ models_config = {
             "clf__estimator__learning_rate": [0.05, 0.1],
             "clf__estimator__depth": [3, 5]
         }
-    },
-
-    "LR": {
-        "model": make_pipeline(LogisticRegression(max_iter=1000), use_scaler=True),
-
-        "params": {
-            "clf__estimator__C": [0.1, 1, 10]
-        }
-    },
-
-    "SVM": {
-        "model": make_pipeline(SVC(probability=True), use_scaler= True),
-
-        "params": {
-            "clf__estimator__C": [0.1, 1, 10],
-            "clf__estimator__kernel": ["rbf"]
-        }
-    },
-
-    "KNN": {
-        "model": make_pipeline(KNeighborsClassifier(), use_scaler= True),
-        "params": {
-            "clf__estimator__n_neighbors": [3, 5, 7]
-        }
-    },
-
-    "NaiveBayes": {
-        "model": make_pipeline(GaussianNB(), use_scaler=True),
-        "params": {}
     }
 }
 
@@ -131,7 +86,7 @@ class ModelFactory():
         scorer = make_scorer(f1_score, average='macro')
         
         if param_grid:
-            if self.model_name in ["LightGBM", "XGBoost", "CatBoost", "RF", "DT"]:
+            if self.model_name in ["LightGBM", "XGBoost", "CatBoost"]:
                 search = RandomizedSearchCV(
                     model,
                     param_distributions=param_grid,
@@ -225,7 +180,7 @@ class ModelFactory():
             For MultiOutputClassifier, we explain each output separately.
             """
             
-            if self.model_name not in ["RF", "XGBoost", "LightGBM", "CatBoost", "DT"]:
+            if self.model_name not in ["XGBoost", "LightGBM", "CatBoost"]:
                 print(f"SHAP explanation skipped: {self.model_name} is not a tree-based model.")
                 return
     

@@ -64,7 +64,7 @@ if page == "Chẩn đoán":
                 "hbf": row["HbF"],
                 "hbh": row["HbH"],
                 "hb_other": row["Hb khác"],
-                "dotbiengen": row["Đột biến gen thalassemia"],
+                #"dotbiengen": row["Đột biến gen thalassemia"],
                 "tsat": row["TSAT (%)"],
                 "mch": row["MCH"],
             })
@@ -196,7 +196,7 @@ if page == "Chẩn đoán":
             # st.write(mchc)
 
         
-        mch= input_field("MCH", "mch")
+        #mch= input_field("MCH", "mch")
             # st.write(mchc)
 
         rbc= input_field("RBC", "rbc")
@@ -257,7 +257,7 @@ if page == "Chẩn đoán":
         hb_other= input_field("Chỉ số Hb khác nếu có", "hb_other")
             # st.write(hb_other)
 
-        dotbiengen= st.text_input("Đột biến gen thalassemia", value= st.session_state.patient.get("dotbiengen", "dotbiengen"))
+        #dotbiengen= st.text_input("Đột biến gen thalassemia", value= st.session_state.patient.get("dotbiengen", "dotbiengen"))
             # st.write(dotbiengen)
 
     submitted = st.button("Submit", use_container_width=True, type="primary")
@@ -267,7 +267,7 @@ if page == "Chẩn đoán":
         p= st.session_state.patient
         config= Config()
 
-        gen_alpha, gen_beta = parse_dotbiengen(dotbiengen)
+        #gen_alpha, gen_beta = parse_dotbiengen(dotbiengen)
 
         patient= Input(gender= p.get("gender"),
         kinh_nguyet= kinh_nguyet,
@@ -284,7 +284,7 @@ if page == "Chẩn đoán":
         rbc= p.get("rbc"),
         hb= p.get("hb"),
         #pcv= pcv,
-        mch= p.get("mch"),
+        #mch= p.get("mch"),
         mcv= p.get("mcv"),
         mchc= p.get("mchc"),
         rdw= p.get("rdw"),
@@ -299,9 +299,9 @@ if page == "Chẩn đoán":
         crp= p.get("crp"),
         tsat= p.get("tsat"),
 
-        dotbiengen= p.get("dotbiengen"),
-        gen_alpha= gen_alpha,
-        gen_beta= gen_beta,
+        #dotbiengen= p.get("dotbiengen"),
+        #gen_alpha= gen_alpha,
+        #gen_beta= gen_beta,
         hba= p.get("hba"),
         hba2= p.get("hba2"),
         hbf= p.get("hbf"),
@@ -322,10 +322,11 @@ if page == "Chẩn đoán":
         st.info(result.diagnoses)
 
 
-        st.subheader("Nguyên nhân và gợi ý")
+        #st.subheader("Nguyên nhân và gợi ý")
 
-        st.info(result.reasons)
+        #st.info(result.reasons)
 
+        """
         info= Patient(id= patient_id, full_name= full_name,
                         dob= dob_str, gender= gender, 
                         phone_number= phone_number, address= address
@@ -342,7 +343,7 @@ if page == "Chẩn đoán":
                 hba= hba, hba2= hba2, hbf= hbf, hbh= hbh, hbe= hbe, 
                 #hbc= hbc,
                 hbs= hbs, hbbart= hbbart, hb_other= hb_other, 
-                diagnoses= result.diagnoses, reasons= result.reasons
+                diagnoses= result.diagnoses
             )
         db= MedicalDatabase()
         db.create_tables()
@@ -350,6 +351,8 @@ if page == "Chẩn đoán":
         db.add_record(record)
         st.success("Đã lưu hồ sơ bệnh nhân thành công")
 
+"""
+"""
 if page == "Tìm kiếm bệnh nhân":
     db= MedicalDatabase()
 
@@ -471,3 +474,4 @@ if page == "Xuất báo cáo":
                 mime="application/pdf",
                 key="download_pdf"
             )
+"""

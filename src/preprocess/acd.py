@@ -12,11 +12,11 @@ def _label_diagnoses(df):
     df.loc[original.str.contains("thiếu máu thiếu sắt", case=False, na=False),
            "Chẩn đoán"] += ", IDA"
 
-    df.loc[original.str.contains("beta thalassemia", case=False, na=False),
-           "Chẩn đoán"] += ", Beta thalassemia"
+    #df.loc[original.str.contains("beta thalassemia", case=False, na=False),
+           #"Chẩn đoán"] += ", Beta thalassemia"
 
-    df.loc[original.str.contains("alpha thalassemia", case=False, na=False),
-           "Chẩn đoán"] += ", Alpha thalassemia"
+    #df.loc[original.str.contains("alpha thalassemia", case=False, na=False),
+           #"Chẩn đoán"] += ", Alpha thalassemia"
 
     return df
 
