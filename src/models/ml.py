@@ -28,14 +28,14 @@ if __name__ == "__main__":
     model_name = args.model_name
 
     # df = pd.read_excel("data/anemia-data.xlsx")
-    df= pd.read_csv("data/reduced_features.csv")
+    df= pd.read_csv("data/concat.csv")
     
     print(df.head())
 
     #df = df.apply(pd.to_numeric, errors='coerce')
 
-    X = df.drop(columns=["ACD", "IDA", "Alpha thalassemia", "Beta thalassemia"])
-    y = df[["ACD", "IDA", "Alpha thalassemia" ,"Beta thalassemia"]]
+    X = df.drop(columns=["ACD", "IDA"])
+    y = df[["ACD", "IDA"]]
 
     msss= MultilabelStratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
     train_idx, test_idx = next(msss.split(X, y))

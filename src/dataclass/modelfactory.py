@@ -170,7 +170,7 @@ class ModelFactory():
             "cv_std_f1": cv_std_f1,
             "cv_fold_scores": cv_fold_scores,
             "training_time_sec": training_time,
-            "report": classification_report(y_test, y_pred, target_names=["ACD", "IDA", "Alpha thalassemia" ,"Beta thalassemia"], digits=4),
+            "report": classification_report(y_test, y_pred, target_names=["ACD", "IDA"], digits=4),
             "saved_model": model_filename
         }
     
@@ -190,7 +190,7 @@ class ModelFactory():
             # Load the trained model
             
             # For MultiOutputClassifier, we need to explain each estimator separately
-            output_names = [f"{self.model_name}_ACD", f"{self.model_name}_IDA", f"{self.model_name}_AThal", f"{self.model_name}_BThal"]  # Update based on your targets
+            output_names = [f"{self.model_name}_ACD", f"{self.model_name}_IDA"]  # Update based on your targets
 
             multi_output_model = model.named_steps["clf"]
 
