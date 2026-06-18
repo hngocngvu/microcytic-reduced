@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 from sklearn.inspection import permutation_importance
 from sklearn.base import clone
 from iterstrat.ml_stratifiers import MultilabelStratifiedShuffleSplit, MultilabelStratifiedKFold
-from iterstrat.ml_stratifiers import MultilabelStratifiedShuffleSplit, MultilabelStratifiedKFold
 
 
 class FeatureSelection():

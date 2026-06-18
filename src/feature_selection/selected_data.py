@@ -15,9 +15,9 @@ if __name__ == "__main__":
     # Load data
     df = pd.read_csv(os.path.join("data", "concat.csv"))
 
-    df= df.drop(columns=["MCH", "TIBC","Ret-He", "HbF", "HbBart", "HbS", "Hb khác"])
-    X= df[df.columns.difference(["ACD", "IDA", "Alpha thalassemia" , "Beta thalassemia"])]
-    y = df[["ACD", "IDA", "Alpha thalassemia" ,"Beta thalassemia"]]
+    #df= df.drop(columns=["MCH", "TIBC","Ret-He", "HbF", "HbBart", "HbS", "Hb khác"])
+    X= df[df.columns.difference(["ACD", "IDA"])]
+    y = df[["ACD", "IDA"]]
 
 
     rf= XGBClassifier(

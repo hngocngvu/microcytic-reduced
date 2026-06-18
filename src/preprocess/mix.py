@@ -31,11 +31,6 @@ def clean_df(df, text_cols):
             col_name= e.columns[i]
             e[col_name] = e[col_name].astype("string")
 
-
-    e["Tiền sử hoặc bệnh kèm theo"] = (
-        e["Tiền sử hoặc bệnh kèm theo"].notna() &
-        e["Tiền sử hoặc bệnh kèm theo"].astype(str).str.strip().ne("")
-    )
     
 
     e= e.rename(columns={
@@ -46,7 +41,7 @@ def clean_df(df, text_cols):
     "RDW-CV\nĐộ phân bố kích thước hồng cầu": "RDW-CV",
     "Fe \nSắt huyết thanh": "Fe",
     "Ferritin\nDự trữ sắt": "Ferritin",
-    "Transferin (mg/dL)\nProtein vận chuyển sắt": "Transferin",
+    "Transferin (mg/dL)\nProtein vận chuyển sắt": "Transferrin",
     "TIBC\nkhả năng gắn sắt toàn bộ": "TIBC",
     "CRP\nChỉ số viêm": "CRP",
     "Ret-He\nChỉ số hemoglobin của hồng cầu lưới": "Ret-He",
@@ -70,7 +65,11 @@ def clean_df(df, text_cols):
     columns=["Đột biến gen thalassemia"],
     errors="ignore",
     inplace=True)
-    
+
+    e["tiensu_ida"]= e["Tiền sử hoặc bệnh kèm theo"].str.contains(r"ung thư|rong kinh|rong huyết|thiếu sắt|loét dạ dày|kí sinh trùng|trĩ chảy máu", case=False, na=False)
+    e["tiensu_acd"]= e["Tiền sử hoặc bệnh kèm theo"].str.contains(r"viêm khớp|gout|suy thận|áp xe gan|ung thư|mạn tính", case=False, na=False)
+
+    e= e.drop(columns=["Tiền sử hoặc bệnh kèm theo"], errors="ignore")
 
     return e
 
@@ -81,7 +80,7 @@ if __name__ == "__main__":
 
     df_mix= pd.read_excel(mix)
 
-    text_cols= [1,22,23]
+    text_cols= [1, 2, 22,23]
 
     cleaned_mix_df= clean_df(df_mix, text_cols)
 

@@ -28,27 +28,21 @@ if __name__ == "__main__":
     model_name = args.model_name
 
     # df = pd.read_excel("data/anemia-data.xlsx")
-    df= pd.read_csv("data/concat.csv")
+    df_train = pd.read_csv("data/train_set.csv")
+    df_test = pd.read_csv("data/test_set.csv")
     
-    print(df.head())
+    print(df_train.head())
 
     #df = df.apply(pd.to_numeric, errors='coerce')
 
-    X = df.drop(columns=["ACD", "IDA"])
-    y = df[["ACD", "IDA"]]
+    X_train = df_train.drop(columns=["ACD", "IDA"])
+    y_train = df_train[["ACD", "IDA"]]
 
-    msss= MultilabelStratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
-    train_idx, test_idx = next(msss.split(X, y))
-
-    X_train, y_train = X.iloc[train_idx], y.iloc[train_idx]
-    X_test, y_test = X.iloc[test_idx], y.iloc[test_idx]
-    
-
-    df_test = df.loc[test_idx]
-    df_test.to_csv("data/reduced_test_data.csv", index=False)
+    X_test = df_test.drop(columns=["ACD", "IDA"])
+    y_test = df_test[["ACD", "IDA"]]
 
     factory = ModelFactory(model_name)
     results = factory.train_and_evaluate(X_train, y_train, X_test, y_test)
 
     print_result(results)
-    factory.explain_with_shap(X_test, feature_names=X.columns.tolist(), trained_model= results["best_model"])
+    factory.explain_with_shap(X_test, feature_names=X_train.columns.tolist(), trained_model= results["best_model"])

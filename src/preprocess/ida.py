@@ -30,11 +30,6 @@ def clean_ida(df, text_cols):
         else:
             col_name = d.columns[i]
             d[col_name] = d[col_name].astype("string")
-        
-    d["Tiền sử hoặc bệnh kèm theo"] = (
-        d["Tiền sử hoặc bệnh kèm theo"].notna() &
-        d["Tiền sử hoặc bệnh kèm theo"].astype(str).str.strip().ne(""))
-
 
     d= d.rename(columns={
     "RBC (T/l)\nSố lượng hồng cầu": "RBC",
@@ -44,7 +39,7 @@ def clean_ida(df, text_cols):
     "RDW-CV\nĐộ phân bố kích thước hồng cầu": "RDW-CV",
     "Fe \nSắt huyết thanh": "Fe",
     "Ferritin\nDự trữ sắt": "Ferritin",
-    "Transferin (mg/dL)\nProtein vận chuyển sắt": "Transferin",
+    "Transferin (mg/dL)\nProtein vận chuyển sắt": "Transferrin",
     "TIBC\nkhả năng gắn sắt toàn bộ": "TIBC",
     "CRP\nChỉ số viêm": "CRP",
     "Ret-He\nChỉ số hemoglobin của hồng cầu lưới": "Ret-He",
@@ -66,14 +61,20 @@ def clean_ida(df, text_cols):
 
     d["Chẩn đoán"]= "IDA"
 
+
     print(d.columns.tolist())
 
     original_ida= d["nguyên nhân thiếu sắt"]
 
-    d.loc[original_ida.str.contains(r"viêm|ung thư|mạn tính", case=False, na=False),
+    d.loc[original_ida.str.contains(r"viêm khớp|ung thư|mạn tính|gout|suy thận|áp xe gan", case=False, na=False),
     "Chẩn đoán"] += ", ACD"
 
-    d = d.drop(columns=["nguyên nhân thiếu sắt"])
+
+    d["tiensu_ida"]= d["nguyên nhân thiếu sắt"].str.contains(r"ung thư|rong kinh|rong huyết|thiếu sắt|loét dạ dày|kí sinh trùng|trĩ chảy máu", case=False, na=False)
+    d["tiensu_acd"]= d["nguyên nhân thiếu sắt"].str.contains(r"viêm khớp|gout|suy thận|áp xe gan|ung thư|mạn tính", case=False, na=False)
+
+
+    d = d.drop(columns=["nguyên nhân thiếu sắt", "Tiền sử hoặc bệnh kèm theo"])
 
 
     return d
@@ -94,6 +95,7 @@ if __name__ == "__main__":
 
     final_ida = pd.concat(cleaned_sheets, ignore_index=True)
 
+    final_ida = final_ida.drop(final_ida.columns[25], axis=1)
     final_ida.to_csv(
         os.path.join(BASE_DIR, "data", "final_ida.csv"),
         index=False

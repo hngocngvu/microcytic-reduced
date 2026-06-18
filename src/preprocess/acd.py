@@ -23,13 +23,16 @@ def _label_diagnoses(df):
 
 def clean_acd(df_acd, drop_col, rename_map, gender=None):
     a = df_acd.drop([drop_col], axis=1)
-    a["Tiền sử hoặc bệnh kèm theo"] = True
     b = a.rename(columns=rename_map)
 
     if gender is not None:
         b["Giới"] = gender
 
+    b["tiensu_ida"]= b["Chẩn đoán"].str.contains(r"ung thư|rong kinh|rong huyết|thiếu sắt|loét dạ dày|kí sinh trùng|trĩ chảy máu",case=False, na=False)
+    b["tiensu_acd"]= True
+
     b = _label_diagnoses(b)
+
     return b
 
 
@@ -38,19 +41,19 @@ if __name__ == "__main__":
         {
             "path": os.path.join(BASE_DIR, "data", "acd.xlsx"),
             "drop_col": "Mã bệnh nhân",
-            "rename_map": {"Họ và tên": "Giới", "Hb (g/l)": "Hb"},
+            "rename_map": {"Họ và tên": "Giới", "Hb (g/l)": "Hb", "Transferin": "Transferrin"},
             "gender": None,
         },
         {
             "path": os.path.join(BASE_DIR, "data", "acd_2.xlsx"),
             "drop_col": "Mã điều trị",
-            "rename_map": {"Hb (g/l)": "Hb"},
+            "rename_map": {"Hb (g/l)": "Hb", "Transferin": "Transferrin"},
             "gender": "Nam",
         },
         {
             "path": os.path.join(BASE_DIR, "data", "acd_3.xlsx"),
             "drop_col": "Mã điều trị",
-            "rename_map": {"Hb (g/l)": "Hb"},
+            "rename_map": {"Hb (g/l)": "Hb", "Transferin": "Transferrin"},
             "gender": "Nữ",
         },
     ]

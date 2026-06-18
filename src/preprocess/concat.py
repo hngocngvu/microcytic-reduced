@@ -66,7 +66,7 @@ def clean_concat(df):
 
         tsat = row["TSAT (%)"]
         fe = row["Fe"]
-        transferin = row["Transferin"]
+        transferin = row["Transferrin"]
 
         # chỉ tính khi TSAT đang thiếu
         if pd.isna(tsat):
@@ -95,7 +95,7 @@ if __name__ == "__main__":
     df= pd.concat([df_acd, df_mix, df_ida], axis=0)
 
 
-    df_new = clean_concat(df)
+    df_new = clean_concat(df).reset_index(drop=True)
 
     print(df_new.info())
     df_new.to_csv(os.path.join(BASE_DIR, "data", "concat_for_eda.csv"), index=False)
