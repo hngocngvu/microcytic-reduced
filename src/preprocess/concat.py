@@ -81,6 +81,16 @@ def clean_concat(df):
     df = df.apply(normalize_missing_values)
 
     df["Giới"] = df["Giới"].str.strip().str.lower()
+
+    df["Hb"] = pd.to_numeric(df["Hb"], errors="coerce")
+    df["MCV"] = pd.to_numeric(df["MCV"], errors="coerce")
+
+    mask = (
+        ((df["Giới"] == "nam") & (df["Hb"] < 130)) |
+        ((df["Giới"] == "nữ") & (df["Hb"] < 120))
+    ) & (df["MCV"] < 80)
+    df = df[mask].reset_index(drop=True)
+
     df= df.drop(columns= ["Tuổi", "cân nặng", "chiều cao", "Đột biến gen thalassemia"])
     df = pd.get_dummies(df, columns=["Giới"], drop_first=True)
 

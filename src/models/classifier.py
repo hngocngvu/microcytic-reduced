@@ -10,7 +10,7 @@ if BASE_DIR not in os.sys.path:
 
 from src.dataclass.schema import Output
 # from src.functions.function import join_text, clean_text, stfr_ferritin_index, cal_mentzer, diendihst, cal_tsat, clean_phay, clean_cham
-from src.functions.function import join_text, cal_tsat, clean_phay, clean_cham, diendihst
+from src.functions.function import join_text, cal_tsat, clean_phay, clean_cham
 
 import joblib
 import pandas as pd
@@ -26,15 +26,15 @@ class Classifier():
         thres= self.config.thres
         labels= self.config.labels
 
-        reasons= []
-        diagnoses= []
+        #reasons= []
+        diagnoses= str
         data.tsat= pd.NA
 
         #data.gender= clean_text(data.gender)
         #if data.gender == "nữ" and data.pregnant is True:
             #data.gender= "pregnant"
 
-        FIELDS = ["hb", "mcv", "ferritin", "transferrin", "fe", "crp"]
+        #FIELDS = ["hb", "mcv", "ferritin", "transferrin", "fe", "crp"]
 
         if not pd.isna(data.fe) and not pd.isna(data.transferrin) and data.transferrin != 0:
             data.tsat= cal_tsat(data.fe, data.transferrin)
@@ -53,7 +53,7 @@ class Classifier():
 
         else: diagnoses= "None"
 
-        diagnoses= [clean_cham(d) for d in diagnoses]
+        #diagnoses= [clean_cham(d) for d in diagnoses]
         #reasons = [clean_cham(r) for r in reasons]
 
         #concat_diagnoses= join_text(diagnoses)
@@ -116,9 +116,8 @@ class Classifier():
             result[label] = f"{float(prob_1) * 100:.2f}%"
 
         return Output(
-            diagnoses=result,
-            reasons="Dựa trên mô hình XGBoost multi-label."
-        )
+            diagnoses=result
+                            )
 
 
 

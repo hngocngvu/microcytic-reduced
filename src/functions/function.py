@@ -116,57 +116,57 @@ def stfr_ferritin_index(stfr, ferritin, thres, labels):
     return diagnosis, reason
 """
 
-def diendihst(data, thres, labels):
-    diagnosis = ""
-    reason = ""
+# def diendihst(data, thres, labels):
+#     diagnosis = ""
+#     reason = ""
     
 
-    hb_list= ["hbbart", "hbh", "hbe", "hbs", "hb_other", "hbf"]
-    alpha = ["sea dị hợp tử", "cd142", "3.7", "4.2"]
-    beta = ["cd41,42", "cd26", "ivs1.1.", "cd17"]
+#     hb_list= ["hbbart", "hbh", "hbe", "hbs", "hb_other", "hbf"]
+#     alpha = ["sea dị hợp tử", "cd142", "3.7", "4.2"]
+#     beta = ["cd41,42", "cd26", "ivs1.1.", "cd17"]
 
 
 
-    if ((not (pd.isna(data.hba) and pd.isna(data.hba2))) or not pd.isna(data.hbbart) or not pd.isna(data.hbh) or not pd.isna(data.hbf)):
+#     if ((not (pd.isna(data.hba) and pd.isna(data.hba2))) or not pd.isna(data.hbbart) or not pd.isna(data.hbh) or not pd.isna(data.hbf)):
 
         
-        if pd.notna(data.dotbiengen) and any(x in data.dotbiengen.lower() for x in alpha):
-            diagnosis = labels[2]
+#         if pd.notna(data.dotbiengen) and any(x in data.dotbiengen.lower() for x in alpha):
+#             diagnosis = labels[2]
 
-        elif pd.notna(data.dotbiengen) and any(x in data.dotbiengen.lower() for x in beta):
-            diagnosis = labels[3]
+#         elif pd.notna(data.dotbiengen) and any(x in data.dotbiengen.lower() for x in beta):
+#             diagnosis = labels[3]
 
 
-        elif ((data.hba < thres['hba'][1] and data.hba > thres['hba'][0]) and (data.hba2 < thres['hba2'][1] and data.hba2 > thres['hba2'][0]) and all(pd.isna(getattr(data, f)) or getattr(data, f) == 0 for f in hb_list)):
-                diagnosis= labels[0]
+#         elif ((data.hba < thres['hba'][1] and data.hba > thres['hba'][0]) and (data.hba2 < thres['hba2'][1] and data.hba2 > thres['hba2'][0]) and all(pd.isna(getattr(data, f)) or getattr(data, f) == 0 for f in hb_list)):
+#                 diagnosis= labels[0]
 
-        elif (data.hbbart >= thres["hbbart"]) or (data.hbh > thres["hbh"]): 
-                diagnosis = labels[2]
+#         elif (data.hbbart >= thres["hbbart"]) or (data.hbh > thres["hbh"]): 
+#                 diagnosis = labels[2]
         
-        elif (data.hba2 > thres["hba2"][1]) or (data.hbf > thres["hbf"]):
-                diagnosis = labels[3]
+#         elif (data.hba2 > thres["hba2"][1]) or (data.hbf > thres["hbf"]):
+#                 diagnosis = labels[3]
 
 
-        else:
-            if not pd.isna(data.dotbiengen) or not pd.isna(data.man_tinh):
-                if not pd.isna(data.dotbiengen) and data.man_tinh:
-                    diagnosis= labels[1]
-                else:
-                    diagnosis= labels[0]
-                    reason= "IDA hoặc Hội chẩn chuyên gia"
+#         else:
+#             if not pd.isna(data.dotbiengen) or not pd.isna(data.man_tinh):
+#                 if not pd.isna(data.dotbiengen) and data.man_tinh:
+#                     diagnosis= labels[1]
+#                 else:
+#                     diagnosis= labels[0]
+#                     reason= "IDA hoặc Hội chẩn chuyên gia"
 
-    return diagnosis, reason
+#     return diagnosis, reason
 
 
 def cal_tsat(fe, transferrin):
     try:
         if pd.isna(fe) or pd.isna(transferrin):
-            return np.nan
+            return pd.NA
         if transferrin == 0:
-            return np.nan
+            return pd.NA
         return fe*100 / (transferrin * 0.179)
     except:
-        return np.nan
+        return pd.NA
 
 
 ALPHA_PATTERN = r"sea|3\.7|4\.2|cd142"

@@ -126,7 +126,6 @@ class FeatureSelection():
         results = []
 
         skf = MultilabelStratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-        skf = MultilabelStratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
         for k in k_range:
             selected_features = ranked_features['feature'].head(k).tolist()

@@ -50,7 +50,7 @@ class Input():
 @dataclass
 class Output():
     diagnoses: Optional[str]
-    reasons: Optional[str]
+    #reasons: Optional[str]
     # confidence: Optional[float]
     # scores: Optional[Dict[str, float]]
 
