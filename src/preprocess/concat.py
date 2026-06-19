@@ -92,6 +92,7 @@ def clean_concat(df):
     df = df[mask].reset_index(drop=True)
 
     df= df.drop(columns= ["Tuổi", "cân nặng", "chiều cao", "Đột biến gen thalassemia"])
+                          #"TIBC", "Ret-He", "HbF", "HbH", "HbBart", "HbS", "HbE", "Hb khác"])
     df = pd.get_dummies(df, columns=["Giới"], drop_first=True)
 
     df["TSAT (%)"] = df["TSAT (%)"].round(1)

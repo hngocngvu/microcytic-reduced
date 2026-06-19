@@ -70,12 +70,12 @@ def plot_multi_pr(models_dict, y_true, X_test):
     return figs
 
 if __name__ == "__main__":
-    data_shap= os.path.join("data", "test_data.csv")
+    data_shap= os.path.join("data", "test_set_reduced_features.csv")
 
     df_shap= pd.read_csv(data_shap)
 
-    X = df_shap.drop(columns=["ACD", "IDA", "Alpha thalassemia",  "Beta thalassemia"])
-    y = df_shap[["ACD", "IDA", "Alpha thalassemia",  "Beta thalassemia"]]
+    X = df_shap.drop(columns=["ACD", "IDA"])
+    y = df_shap[["ACD", "IDA"]]
 
 
     models = {

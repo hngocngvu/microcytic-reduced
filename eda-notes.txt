@@ -1,0 +1,106 @@
+RangeIndex: 252 entries, 0 to 251
+Data columns (total 26 columns):
+ #   Column       Non-Null Count  Dtype  
+---  ------       --------------  -----  
+ 0   Hb           252 non-null    int64  
+ 1   MCV          252 non-null    float64
+ 2   Fe           239 non-null    float64
+ 3   Ferritin     236 non-null    float64
+ 4   Transferrin  166 non-null    float64
+ 5   TSAT (%)     176 non-null    float64
+ 6   CRP          181 non-null    float64
+ 7   Chẩn đoán    252 non-null    object 
+ 8   tiensu_ida   252 non-null    bool   
+ 9   tiensu_acd   252 non-null    bool   
+ 10  RBC          113 non-null    float64
+ 11  MCHC         116 non-null    float64
+ 12  RDW-CV       82 non-null     float64
+ 13  TIBC         1 non-null      float64
+ 14  Ret-He       7 non-null      float64
+ 15  HbA1         85 non-null     float64
+ 16  HbA2         75 non-null     float64
+ 17  HbF          1 non-null      float64
+ 18  HbH          0 non-null      float64
+ 19  HbBart       0 non-null      float64
+ 20  HbS          0 non-null      float64
+ 21  HbE          3 non-null      float64
+ 22  Hb khác      0 non-null      float64
+ 23  ACD          252 non-null    int64  
+ 24  IDA          252 non-null    int64  
+ 25  Giới_nữ      252 non-null    bool   
+
+ACD (n=123)
+          CRP      Fe  Ferritin      Hb  Hb khác  HbA1  HbA2  HbBart  HbE  HbF  HbH  HbS   MCHC     MCV   RBC  RDW-CV  Ret-He  TIBC  TSAT (%)  Transferrin
+count  123.00  123.00    123.00  123.00      0.0   1.0   1.0     0.0  0.0  0.0  0.0  0.0    1.0  123.00  1.00     1.0     0.0   0.0    123.00       123.00
+mean    93.53    3.42    965.76   89.89      NaN  97.6   2.4     NaN  NaN  NaN  NaN  NaN  317.0   72.82  3.77    13.6     NaN   NaN     13.11       149.00
+std     90.15    1.05   1106.68   15.50      NaN   NaN   NaN     NaN  NaN  NaN  NaN  NaN    NaN    6.55   NaN     NaN     NaN   NaN     12.06        42.05
+min      5.80    1.30    103.00   53.00      NaN  97.6   2.4     NaN  NaN  NaN  NaN  NaN  317.0   56.70  3.77    13.6     NaN   NaN      1.50        58.00
+25%     24.50    2.60    353.10   80.00      NaN  97.6   2.4     NaN  NaN  NaN  NaN  NaN  317.0   68.45  3.77    13.6     NaN   NaN      7.35       117.50
+50%     62.90    3.40    688.00   89.00      NaN  97.6   2.4     NaN  NaN  NaN  NaN  NaN  317.0   75.60  3.77    13.6     NaN   NaN     12.20       147.00
+75%    122.65    4.10   1152.00   98.00      NaN  97.6   2.4     NaN  NaN  NaN  NaN  NaN  317.0   78.40  3.77    13.6     NaN   NaN     15.90       175.50
+max    454.10    5.70   8588.00  128.00      NaN  97.6   2.4     NaN  NaN  NaN  NaN  NaN  317.0   79.90  3.77    13.6     NaN   NaN    122.00       276.00
+IDA (n=109)
+          CRP     Fe  Ferritin      Hb  Hb khác   HbA1   HbA2  HbBart    HbE  HbF  HbH  HbS    MCHC     MCV     RBC  RDW-CV  Ret-He  TIBC  TSAT (%)  Transferrin
+count   40.00  96.00     94.00  109.00      0.0  78.00  69.00     0.0   3.00  1.0  0.0  0.0  109.00  109.00  106.00   80.00    5.00   1.0     36.00        27.00
+mean    10.54   3.64     20.29   64.25      NaN  97.48   2.00     NaN  13.27  0.8  NaN  NaN  282.11   62.65    3.60   20.85   19.21  73.4      8.72       340.00
+std     22.65   4.12     24.82   19.53      NaN   2.97   0.48     NaN   7.05  NaN  NaN  NaN   20.64    7.87    0.93    2.49   32.56   NaN     13.81        58.77
+min      0.20   0.69      1.93   17.00      NaN  77.70   1.50     NaN   5.80  0.8  NaN  NaN  241.00   45.00    1.23   13.60    1.45  73.4      1.50       200.00
+25%      0.40   2.00      5.03   52.00      NaN  97.90   1.80     NaN  10.00  0.8  NaN  NaN  266.00   55.90    2.98   19.10    1.89  73.4      3.00       325.00
+50%      2.05   2.50      9.60   60.00      NaN  98.10   1.90     NaN  14.20  0.8  NaN  NaN  283.00   62.60    3.63   20.90    2.71  73.4      4.05       344.00
+75%      8.57   3.45     19.20   78.00      NaN  98.20   2.10     NaN  17.00  0.8  NaN  NaN  298.00   68.00    4.21   22.60   13.20  73.4      5.05       372.50
+max    110.90  26.50    111.10  110.00      NaN  98.50   5.00     NaN  19.80  0.8  NaN  NaN  333.00   78.00    5.54   28.00   76.80  73.4     47.80       433.00
+ACD, IDA (n=20)
+          CRP     Fe  Ferritin      Hb  Hb khác   HbA1  HbA2  HbBart  HbE  HbF  HbH  HbS    MCHC    MCV   RBC  RDW-CV  Ret-He  TIBC  TSAT (%)  Transferrin
+count   18.00  20.00     19.00   20.00      0.0   6.00  5.00     0.0  0.0  0.0  0.0  0.0    6.00  20.00  6.00     1.0    2.00   0.0     17.00        16.00
+mean   104.22   2.65    464.44   77.90      NaN  98.15  1.84     NaN  NaN  NaN  NaN  NaN  287.67  69.16  3.34    21.1   68.15   NaN      8.49       178.00
+std     72.07   0.95    405.89   18.43      NaN   0.19  0.21     NaN  NaN  NaN  NaN  NaN   20.72   9.04  0.94     NaN   40.66   NaN      5.29        70.88
+min      0.70   1.50      8.50   39.00      NaN  97.90  1.60     NaN  NaN  NaN  NaN  NaN  250.00  51.10  1.79    21.1   39.40   NaN      2.90        82.00
+25%     54.55   2.08     84.30   66.75      NaN  98.02  1.70     NaN  NaN  NaN  NaN  NaN  284.00  60.95  3.06    21.1   53.78   NaN      4.60       133.50
+50%    115.25   2.40    447.00   85.00      NaN  98.15  1.80     NaN  NaN  NaN  NaN  NaN  292.00  69.30  3.52    21.1   68.15   NaN      7.80       170.00
+75%    169.28   2.88    815.00   88.75      NaN  98.28  2.00     NaN  NaN  NaN  NaN  NaN  298.50  77.20  3.66    21.1   82.52   NaN     10.20       208.00
+max    199.10   5.60   1062.00  105.00      NaN  98.40  2.10     NaN  NaN  NaN  NaN  NaN  310.00  79.70  4.62    21.1   96.90   NaN     19.60       305.00
+
+Feature  H-statistic  p-value Significant
+        CRP      67.6633 0.000000         ***
+   Ferritin     162.7813 0.000000         ***
+         Hb      83.3958 0.000000         ***
+        MCV      78.0852 0.000000         ***
+Transferrin      66.0682 0.000000         ***
+   TSAT (%)      35.6618 0.000000         ***
+         Fe      20.4724 0.000036         ***
+       HbA2       0.6807 0.409332            
+       HbA1       0.5794 0.446530            
+       MCHC       0.4966 0.481005            
+        RBC       0.4010 0.526596            
+
+Statistically significant features (p<0.05): 
+['CRP', 'Ferritin', 'Hb', 'MCV', 'Transferrin', 'TSAT (%)', 'Fe']
+
+
+CRP
+  ACD vs IDA: p=0.000000 ***
+  ACD, IDA vs IDA: p=0.000000 ***
+
+Ferritin
+  ACD vs IDA: p=0.000000 ***
+  ACD, IDA vs IDA: p=0.000004 ***
+
+Hb
+  ACD vs IDA: p=0.000000 ***
+  ACD, IDA vs IDA: p=0.020848 *
+
+MCV
+  ACD vs IDA: p=0.000000 ***
+  ACD, IDA vs IDA: p=0.006642 **
+
+Transferrin
+  ACD vs IDA: p=0.000000 ***
+  ACD, IDA vs IDA: p=0.000046 ***
+
+TSAT (%)
+  ACD vs IDA: p=0.000000 ***
+
+Fe
+  ACD vs ACD, IDA: p=0.008427 **
+  ACD vs IDA: p=0.000166 ***
+

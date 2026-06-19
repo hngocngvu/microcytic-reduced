@@ -3,7 +3,7 @@ from iterstrat.ml_stratifiers import MultilabelStratifiedShuffleSplit
 
 
 if __name__ == "__main__":
-    df= pd.read_csv("data/concat.csv")
+    df= pd.read_csv("data/reduced_features.csv")
     print(df.head())
 
     X = df.drop(columns=["ACD", "IDA"])
@@ -18,8 +18,21 @@ if __name__ == "__main__":
     X_test, y_test = X.iloc[test_idx], y.iloc[test_idx]
 
     df_train= df.loc[train_idx]
-    df_train.to_csv("data/train_set.csv", index=False)
+    df_train.to_csv("data/train_set_reduced_features.csv", index=False)
 
-    
+    #required_features = ["MCV", "Hb", "TSAT (%)", "Ferritin", "CRP"]
+
     df_test = df.loc[test_idx]
-    df_test.to_csv("data/test_set.csv", index=False)
+
+    # Remove records with missing values in any required feature
+    #df_test_complete = df_test.dropna(subset=required_features)
+
+    #print(f"Original test set size: {len(df_test)}")
+    #print(f"Complete-case test set size: {len(df_test_complete)}")
+    #print(f"Excluded records: {len(df_test) - len(df_test_complete)}")
+
+    df_test.to_csv(
+        "data/test_set_reduced_features.csv",
+        index=False
+    )
+    
