@@ -35,7 +35,7 @@ def convert_label(x):
     if len(labels) == 0:
         return "None"
 
-    return ", ".join(sorted(labels))
+    return "/".join(sorted(labels))
 
 
 def normalize_missing_values(df):
@@ -84,6 +84,10 @@ def clean_concat(df):
 
     df["Hb"] = pd.to_numeric(df["Hb"], errors="coerce")
     df["MCV"] = pd.to_numeric(df["MCV"], errors="coerce")
+    df = df.drop_duplicates()
+
+
+    print("Before filtering, number of rows:", len(df))
 
     mask = (
         ((df["Giới"] == "nam") & (df["Hb"] < 130)) |
@@ -91,12 +95,12 @@ def clean_concat(df):
     ) & (df["MCV"] < 80)
     df = df[mask].reset_index(drop=True)
 
+    print("After filtering, number of rows:", len(df))
     df= df.drop(columns= ["Tuổi", "cân nặng", "chiều cao", "Đột biến gen thalassemia"])
                           #"TIBC", "Ret-He", "HbF", "HbH", "HbBart", "HbS", "HbE", "Hb khác"])
     df = pd.get_dummies(df, columns=["Giới"], drop_first=True)
 
     df["TSAT (%)"] = df["TSAT (%)"].round(1)
-    df = df.drop_duplicates()
 
     return df
 

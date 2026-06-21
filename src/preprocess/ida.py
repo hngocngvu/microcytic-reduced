@@ -67,7 +67,7 @@ def clean_ida(df, text_cols):
     original_ida= d["nguyên nhân thiếu sắt"]
 
     d.loc[original_ida.str.contains(r"viêm khớp|ung thư|mạn tính|gout|suy thận|áp xe gan", case=False, na=False),
-    "Chẩn đoán"] += ", ACD"
+    "Chẩn đoán"] += "/ACD"
 
 
     d["tiensu_ida"]= d["nguyên nhân thiếu sắt"].str.contains(r"ung thư|rong kinh|rong huyết|thiếu sắt|loét dạ dày|kí sinh trùng|trĩ chảy máu", case=False, na=False)

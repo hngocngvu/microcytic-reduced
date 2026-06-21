@@ -10,7 +10,7 @@ def _label_diagnoses(df):
     df["Chẩn đoán"] = "ACD"
 
     df.loc[original.str.contains("thiếu máu thiếu sắt", case=False, na=False),
-           "Chẩn đoán"] += ", IDA"
+           "Chẩn đoán"] += "/IDA"
 
     #df.loc[original.str.contains("beta thalassemia", case=False, na=False),
            #"Chẩn đoán"] += ", Beta thalassemia"
