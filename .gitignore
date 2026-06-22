@@ -17,3 +17,5 @@ png/
 .thesis/
 
 catboost_info/
+
+nhanes_data/

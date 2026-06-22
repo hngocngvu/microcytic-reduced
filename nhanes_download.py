@@ -1,0 +1,342 @@
+"""
+Download and merge NHANES datasets for anemia research.
+Files: CBC, Ferritin, Iron/TIBC/TSAT, hs-CRP, Demographics, sTfR.
+
+NHANES public-use data: free to download, no registration required.
+Data Use Agreement (implicit): use for statistical analysis only,
+do not attempt to identify individuals.
+
+Usage:
+    pip install pandas requests
+    python nhanes_download.py
+"""
+
+import os
+import sys
+import requests
+import pandas as pd
+import numpy as np
+
+DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "nhanes_data")
+OUTPUT_CSV = os.path.join(
+    DATA_DIR,
+    "nhanes_anemia_2013_2018.csv"
+)
+
+CYCLES = {
+    "I": {
+        "year": "2015",
+        "files": {
+            "demo": "DEMO_I.xpt",
+            "cbc": "CBC_I.xpt",
+            "ferritin": "FERTIN_I.xpt",
+            #"iron": "FETIB_I.xpt",
+            "crp": "HSCRP_I.xpt",
+            "stfr": "TFR_I.xpt",
+        }
+    },
+
+    "J": {
+        "year": "2017",
+        "files": {
+            "demo": "DEMO_J.xpt",
+            "cbc": "CBC_J.xpt",
+            "ferritin": "FERTIN_J.xpt",
+            "iron": "FETIB_J.xpt",
+            "crp": "HSCRP_J.xpt",
+            "stfr": "TFR_J.xpt",
+        }
+    }
+}
+
+DATASETS = {
+    "demo": {
+        "file": "DEMO_{}.xpt",
+        "desc": "Demographics",
+        "cols": ["SEQN", "RIDAGEYR", "RIAGENDR"],
+    },
+
+    "cbc": {
+        "file": "CBC_{}.xpt",
+        "desc": "Complete Blood Count",
+        "cols": [
+            "SEQN",
+            "LBXHGB",
+            "LBXRBCSI",
+            "LBXHCT",
+            "LBXMCVSI",
+            "LBXMCHSI",
+            "LBXMC",
+            "LBXRDW",
+            "LBXPLTSI",
+            "LBXWBCSI",
+        ],
+    },
+
+    "ferritin": {
+        "file": "FERTIN_{}.xpt",
+        "desc": "Ferritin",
+        "cols": ["SEQN", "LBXFER"],
+    },
+
+
+    "crp": {
+        "file": "HSCRP_{}.xpt",
+        "desc": "hsCRP",
+        "cols": ["SEQN", "LBXHSCRP"],
+    },
+
+    "stfr": {
+        "file": "TFR_{}.xpt",
+        "desc": "sTfR",
+        "cols": [
+            "SEQN",
+            "LBXTFR",
+        ],
+    },
+}
+
+RENAME = {
+    "RIDAGEYR": "age",
+    "RIAGENDR": "gender",
+    "LBXHGB": "hemoglobin",
+    "LBXRBCSI": "rbc",
+    "LBXHCT": "hematocrit",
+    "LBXMCVSI": "mcv",
+    "LBXMCHSI": "mch",
+    "LBXMC": "mchc",
+    "LBXRDW": "rdw",
+    "LBXPLTSI": "platelet",
+    "LBXWBCSI": "wbc",
+    "LBXFER": "ferritin",
+    "LBXIRN": "serum_iron",
+    "LBDTIB": "tibc",
+    "LBDPCT": "tsat",
+    "LBXHSCRP": "hscrp",
+    "LBXTFR":   "stfr",        # sTfR in mg/L
+}
+
+GENDER_MAP = {1: "Male", 2: "Female"}
+
+
+def download_xpt(name, cycle):
+
+    year = CYCLES[cycle]["year"]
+    filename = CYCLES[cycle]["files"][name]
+
+    base_url = (
+    f"https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/"
+    f"{year}/DataFiles"
+)
+
+    url = f"{base_url}/{filename}"
+
+    xpt_path = os.path.join(
+        DATA_DIR,
+        f"{name}_{cycle}.xpt"
+    )
+
+    if os.path.exists(xpt_path):
+        print(f"  [cached] {filename}")
+
+    else:
+        print(f"  [downloading] {filename}")
+
+        r = requests.get(url, timeout=60)
+        r.raise_for_status()
+
+        with open(xpt_path, "wb") as f:
+            f.write(r.content)
+
+    df = pd.read_sas(xpt_path, format="xport")
+
+    available = [
+        c
+        for c in DATASETS[name]["cols"]
+        if c in df.columns
+    ]
+
+    missing = set(DATASETS[name]["cols"]) - set(available)
+
+    if missing:
+        print(
+            f"    [warning] {filename}: "
+            f"missing columns {missing}"
+        )
+
+    return df[available]
+
+
+def add_stfr_index(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Compute sTfR Index = sTfR (mg/L) / log10(ferritin (ng/mL)).
+
+    Thomas & Thomas index — widely used to distinguish IDA from ACD:
+      - sTfR Index > 2  → suggests IDA (or IDA component in combined)
+      - sTfR Index ≤ 2  → suggests ACD without true iron deficiency
+
+    Requires both 'stfr' and 'ferritin' columns to be present and > 0.
+    """
+    if "stfr" not in df.columns or "ferritin" not in df.columns:
+        print("  [skip] sTfR Index: missing stfr or ferritin column")
+        return df
+
+    valid = (df["stfr"] > 0) & (df["ferritin"] > 0)
+    df["stfr_index"] = np.where(
+        valid,
+        df["stfr"] / np.log10(df["ferritin"].where(valid, np.nan)),
+        np.nan,
+    )
+    n_valid = valid.sum()
+    n_total = len(df)
+    print(f"  sTfR Index computed for {n_valid}/{n_total} rows "
+          f"({n_valid/n_total*100:.1f}%); NaN for zero/missing values.")
+    return df
+
+
+def add_anemia_labels(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+
+    # WHO anemia thresholds
+    anemic = (
+        ((df["gender"] == "Male") & (df["hemoglobin"] < 13))
+        | ((df["gender"] == "Female") & (df["hemoglobin"] < 12))
+    )
+
+    microcytic   = df["mcv"] < 80
+    #muc_tsat     = df["tsat"] < 20
+    muc_d_ferritin = df["ferritin"] < 30
+    #muc_u_ferritin = df["ferritin"] >= 100
+    #muc_w_ferritin = (df["ferritin"] >= 30) & (df["ferritin"] < 100)
+    muc_crp      = df["hscrp"] >= 10
+    muc_stfr_l_index= df["stfr_index"] >=2 
+    muc_stfr_i_index= df["stfr_index"] >=3.2
+
+
+    conditions = [
+        (anemic & microcytic) & (muc_stfr_i_index) & ~muc_crp,
+        (anemic & microcytic) & (muc_stfr_l_index) & muc_crp,
+        (anemic & microcytic) & ((~muc_stfr_l_index & ~muc_d_ferritin)) & muc_crp,
+    ]
+    labels = ["IDA", "IDA/ACD", "ACD"]
+    df["anemia_class"] = np.select(conditions, labels, default="Unclassified")
+    df = df[df["anemia_class"].isin(labels)]
+    return df
+
+
+def main():
+    os.makedirs(DATA_DIR, exist_ok=True)
+
+    print("NHANES 2013-2018 Anemia Dataset Downloader")
+    print(f"Output directory: {DATA_DIR}\n")
+
+    print("[1/4] Downloading NHANES cycles...")
+
+    all_cycles = []
+
+    for cycle, cycle_info in CYCLES.items():
+
+        year = cycle_info["year"]
+
+        print(f"\n===== {year}-{int(year)+1} =====")
+
+        frames = {}
+
+        for name in DATASETS:
+            frames[name] = download_xpt(name, cycle)
+
+        print(f"[2/4] Merging {cycle}...")
+
+        df_cycle = frames["demo"]
+
+        for name in ["cbc", "ferritin", "crp"]:
+            df_cycle = df_cycle.merge(
+                frames[name],
+                on="SEQN",
+                how="inner"
+            )
+
+        # LEFT join for sTfR
+        df_cycle = df_cycle.merge(
+            frames["stfr"],
+            on="SEQN",
+            how="left"
+        )
+
+        df_cycle["cycle"] = cycle
+
+        print(f"  {cycle}: {len(df_cycle)} rows")
+
+        all_cycles.append(df_cycle)
+
+    # merge all cycles
+    df = pd.concat(
+        all_cycles,
+        ignore_index=True
+    )
+
+    print(f"\nMerged records across all cycles: {len(df)}")
+
+    # rename columns
+    df.rename(columns=RENAME, inplace=True)
+    df["gender"] = df["gender"].map(GENDER_MAP)
+
+    # drop rows with missing core labs
+    complete_before = len(df)
+
+    lab_cols = [
+        "hemoglobin",
+        "mcv",
+        "ferritin",
+        #"tsat",
+        "hscrp",
+        "stfr"
+    ]
+
+    df = df.dropna(subset=lab_cols)
+
+    print(
+        f"  After dropping rows with missing core lab values: "
+        f"{len(df)} (dropped {complete_before-len(df)})"
+    )
+
+    stfr_available = df["stfr"].notna().sum()
+
+    print(
+        f"  Rows with sTfR data: "
+        f"{stfr_available}/{len(df)} "
+        f"({stfr_available/len(df)*100:.1f}%)"
+    )
+
+    print("\n[3/4] Computing derived features...")
+    df = add_stfr_index(df)
+
+    print("\n[4/4] Adding anemia classification labels...")
+    df = add_anemia_labels(df)
+
+    class_counts = df["anemia_class"].value_counts()
+
+    print("\nLabel distribution:")
+    for label, count in class_counts.items():
+        print(
+            f"  {label:20s}"
+            f"{count:>6d}"
+            f" ({count/len(df)*100:.1f}%)"
+        )
+
+    df.to_csv(OUTPUT_CSV, index=False)
+
+    print(f"\nSaved to: {OUTPUT_CSV}")
+    print(f"Total rows: {len(df)}")
+    print(f"Total columns: {len(df.columns)}")
+
+    print("\nColumns in output:")
+    for col in df.columns:
+        print(f"  - {col}")
+
+    print("\n" + "="*60)
+    print("Done!")
+    print("="*60)
+
+if __name__ == "__main__":
+    main()
