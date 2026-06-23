@@ -27,8 +27,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     model_name = args.model_name
 
-    df_train = pd.read_csv("data/train_set_reduced_features.csv")
-    df_test = pd.read_csv("data/test_set_reduced_features.csv")
+    df_train = pd.read_csv("data/train_set.csv")
+    df_test = pd.read_csv("data/test_set.csv")
 
     print(df_train.head())
 

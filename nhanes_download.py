@@ -234,7 +234,7 @@ def add_anemia_labels(df: pd.DataFrame) -> pd.DataFrame:
     muc_stfr_l_index = df["stfr_index"] >= 2
     muc_stfr_i_index = df["stfr_index"] >= 3.2
 
-    if "tsat" and "ferritin" in df.columns:
+    if "tsat" in df.columns and "ferritin" in df.columns:
         has_iron = df["tsat"].notna() & df["ferritin"].notna()
     else:
         has_iron = pd.Series(False, index=df.index)

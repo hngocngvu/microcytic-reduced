@@ -15,7 +15,6 @@ if __name__ == "__main__":
     # Load data
     df = pd.read_csv(os.path.join("data", "concat.csv"))
 
-    #df= df.drop(columns=["MCH", "TIBC","Ret-He", "HbF", "HbBart", "HbS", "Hb khác"])
     X= df[df.columns.difference(["ACD", "IDA"])]
     y = df[["ACD", "IDA"]]
 
