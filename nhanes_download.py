@@ -20,17 +20,29 @@ import numpy as np
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "nhanes_data")
 OUTPUT_CSV = os.path.join(
     DATA_DIR,
-    "nhanes_anemia_2013_2018.csv"
+    "nhanes_microcytic_anemia_2013_2018.csv"
 )
 
 CYCLES = {
+    "H": {
+        "year": "2013",
+        "files": {
+            "demo": "DEMO_H.xpt",
+            "cbc": "CBC_H.xpt",
+            "ferritin": "FERTIN_H.xpt",
+            "iron": "FETIB_H.xpt",
+            "crp": "HSCRP_H.xpt",
+            "stfr": "TFR_H.xpt",
+        }
+    },
+
     "I": {
         "year": "2015",
         "files": {
             "demo": "DEMO_I.xpt",
             "cbc": "CBC_I.xpt",
             "ferritin": "FERTIN_I.xpt",
-            #"iron": "FETIB_I.xpt",
+            "iron": "FETIB_I.xpt",
             "crp": "HSCRP_I.xpt",
             "stfr": "TFR_I.xpt",
         }
@@ -80,6 +92,12 @@ DATASETS = {
     },
 
 
+    "iron": {
+        "file": "FETIB_{}.xpt",
+        "desc": "Iron/TIBC/TSAT",
+        "cols": ["SEQN", "LBXIRN", "LBDTIB", "LBDPCT"],
+    },
+
     "crp": {
         "file": "HSCRP_{}.xpt",
         "desc": "hsCRP",
@@ -121,13 +139,17 @@ GENDER_MAP = {1: "Male", 2: "Female"}
 
 def download_xpt(name, cycle):
 
+    if name not in CYCLES[cycle]["files"]:
+        print(f"  [skip] {name}: not available in cycle {cycle}")
+        return None
+
     year = CYCLES[cycle]["year"]
     filename = CYCLES[cycle]["files"][name]
 
     base_url = (
-    f"https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/"
-    f"{year}/DataFiles"
-)
+        f"https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/"
+        f"{year}/DataFiles"
+    )
 
     url = f"{base_url}/{filename}"
 
@@ -142,8 +164,12 @@ def download_xpt(name, cycle):
     else:
         print(f"  [downloading] {filename}")
 
-        r = requests.get(url, timeout=60)
-        r.raise_for_status()
+        try:
+            r = requests.get(url, timeout=120)
+            r.raise_for_status()
+        except requests.RequestException as e:
+            print(f"  [error] {filename}: {e}")
+            return None
 
         with open(xpt_path, "wb") as f:
             f.write(r.content)
@@ -163,6 +189,10 @@ def download_xpt(name, cycle):
             f"    [warning] {filename}: "
             f"missing columns {missing}"
         )
+
+    if "SEQN" not in available:
+        print(f"  [error] {filename}: missing SEQN column")
+        return None
 
     return df[available]
 
@@ -243,7 +273,15 @@ def main():
         frames = {}
 
         for name in DATASETS:
-            frames[name] = download_xpt(name, cycle)
+            result = download_xpt(name, cycle)
+            if result is not None:
+                frames[name] = result
+
+        required = ["demo", "cbc", "ferritin", "crp"]
+        missing_req = [r for r in required if r not in frames]
+        if missing_req:
+            print(f"  [skip cycle {cycle}] missing required datasets: {missing_req}")
+            continue
 
         print(f"[2/4] Merging {cycle}...")
 
@@ -256,12 +294,13 @@ def main():
                 how="inner"
             )
 
-        # LEFT join for sTfR
-        df_cycle = df_cycle.merge(
-            frames["stfr"],
-            on="SEQN",
-            how="left"
-        )
+        for name in ["iron", "stfr"]:
+            if name in frames:
+                df_cycle = df_cycle.merge(
+                    frames[name],
+                    on="SEQN",
+                    how="left"
+                )
 
         df_cycle["cycle"] = cycle
 
@@ -284,29 +323,25 @@ def main():
     # drop rows with missing core labs
     complete_before = len(df)
 
-    lab_cols = [
+    core_labs = [
         "hemoglobin",
         "mcv",
         "ferritin",
-        #"tsat",
         "hscrp",
-        "stfr"
+        "stfr",
     ]
 
-    df = df.dropna(subset=lab_cols)
+    df = df.dropna(subset=core_labs)
 
     print(
         f"  After dropping rows with missing core lab values: "
         f"{len(df)} (dropped {complete_before-len(df)})"
     )
 
-    stfr_available = df["stfr"].notna().sum()
-
-    print(
-        f"  Rows with sTfR data: "
-        f"{stfr_available}/{len(df)} "
-        f"({stfr_available/len(df)*100:.1f}%)"
-    )
+    for col in ["stfr", "serum_iron", "tibc", "tsat"]:
+        if col in df.columns:
+            n = df[col].notna().sum()
+            print(f"  Rows with {col}: {n}/{len(df)} ({n/len(df)*100:.1f}%)")
 
     print("\n[3/4] Computing derived features...")
     df = add_stfr_index(df)

@@ -11,37 +11,10 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.multioutput import MultiOutputClassifier
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
+
 
 def make_pipeline(model, use_scaler= False):
-
-    if isinstance(model, RandomForestClassifier):
-        return Pipeline([
-            ("clf", RandomForestClassifier(random_state=42))
-        ])
-    
-    if isinstance(model, DecisionTreeClassifier):
-        return Pipeline([
-            ("clf", DecisionTreeClassifier(random_state=42))
-        ])
-    
-
-    # KNN hỗ trợ multi-output sẵn nhưng cần scale
-    if isinstance(model, KNeighborsClassifier):
-        return Pipeline([
-            ("scaler", StandardScaler()),
-            ("clf", model)
-        ])
-
-    if use_scaler:
-        return Pipeline([
-            ("scaler", StandardScaler()),
-            ("clf", MultiOutputClassifier(model))
-        ])
-    else:
-        return Pipeline([
+    return Pipeline([
             ("clf", MultiOutputClassifier(model))
         ])
     
@@ -84,37 +57,37 @@ def remove_duplicates_comma(text):
     return ", ".join(unique_items)
 
 
-"""
-def cal_mentzer(mcv, rbc):
-    if rbc is np.nan or rbc == 0:
-        return np.nan
-    return mcv/rbc
 
-def stfr_ferritin_index(stfr, ferritin, thres, labels):
-    diagnosis: str
-    reason: str
-    idx= 0
+# def cal_mentzer(mcv, rbc):
+#     if rbc is np.nan or rbc == 0:
+#         return np.nan
+#     return mcv/rbc
 
-    if ferritin is not np.nan and stfr is not np.nan and ferritin >0 and ferritin !=1: 
-        idx= stfr / math.log10(ferritin)
+# def stfr_ferritin_index(stfr, ferritin, thres, labels):
+#     diagnosis: str
+#     reason: str
+#     idx= 0
 
-    if idx > thres['stfr_fer_idx'][1]:
-        diagnosis= labels[1]
-        reason= ""
+#     if ferritin is not np.nan and stfr is not np.nan and ferritin >0 and ferritin !=1: 
+#         idx= stfr / math.log10(ferritin)
+
+#     if idx > thres['stfr_fer_idx'][1]:
+#         diagnosis= labels[1]
+#         reason= ""
                         
-    elif idx < thres['stfr_fer_idx'][0]:
-        diagnosis= labels[3]
-        reason= ""
+#     elif idx < thres['stfr_fer_idx'][0]:
+#         diagnosis= labels[3]
+#         reason= ""
 
 
-    else:
-        reason= "Theo dõi thêm (thử sắt)"
-        diagnosis= labels[2]
-        reason= ""
+#     else:
+#         reason= "Theo dõi thêm (thử sắt)"
+#         diagnosis= labels[2]
+#         reason= ""
 
 
-    return diagnosis, reason
-"""
+#     return diagnosis, reason
+
 
 # def diendihst(data, thres, labels):
 #     diagnosis = ""
