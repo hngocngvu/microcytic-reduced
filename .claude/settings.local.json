@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "mcp__codegraph__codegraph_files",
-      "Bash(ping -n 2 wwwn.cdc.gov)",
-      "Bash(ping -n 2 google.com)"
-    ]
-  }
-}
