@@ -227,30 +227,51 @@ def add_stfr_index(df: pd.DataFrame) -> pd.DataFrame:
 def add_anemia_labels(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
 
-    # WHO anemia thresholds
     anemic = (
         ((df["gender"] == "Male") & (df["hemoglobin"] < 13))
         | ((df["gender"] == "Female") & (df["hemoglobin"] < 12))
     )
 
-    microcytic   = df["mcv"] < 80
-    #muc_tsat     = df["tsat"] < 20
-    muc_d_ferritin = df["ferritin"] < 30
-    #muc_u_ferritin = df["ferritin"] >= 100
-    #muc_w_ferritin = (df["ferritin"] >= 30) & (df["ferritin"] < 100)
-    muc_crp      = df["hscrp"] >= 10
-    muc_stfr_l_index= df["stfr_index"] >=2 
-    muc_stfr_i_index= df["stfr_index"] >=3.2
+    microcytic = df["mcv"] < 80
+    base = anemic & microcytic
 
+    muc_d_ferritin = df["ferritin"] < 30
+    muc_u_ferritin = df["ferritin"] >= 100
+    muc_l_ferritin = df["ferritin"] < 100
+    muc_crp_high = df["hscrp"] > 10
+    muc_crp_low = df["hscrp"] <= 10
+    muc_stfr_l_index = df["stfr_index"] >= 2
+    muc_stfr_i_index = df["stfr_index"] >= 3.2
+
+    if "tsat" in df.columns:
+        has_iron = df["tsat"].notna() & df["ferritin"].notna()
+    else:
+        has_iron = pd.Series(False, index=df.index)
+
+    muc_tsat = df["tsat"] < 20 if "tsat" in df.columns else pd.Series(False, index=df.index)
 
     conditions = [
-        (anemic & microcytic) & (muc_stfr_i_index) & ~muc_crp,
-        (anemic & microcytic) & (muc_stfr_l_index) & muc_crp,
-        (anemic & microcytic) & ((~muc_stfr_l_index & ~muc_d_ferritin)) & muc_crp,
+        # Co du chi so sat (serum_iron, tibc, tsat, ferritin)
+        base & has_iron & muc_crp_low & ((muc_tsat & muc_d_ferritin) | muc_stfr_i_index),
+        base & has_iron & muc_crp_high & muc_tsat & muc_u_ferritin,
+        base & has_iron & muc_crp_high & ((muc_tsat & muc_l_ferritin) | muc_stfr_l_index),
+
+        # Khong co chi so sat — fallback dung stfr_index
+        base & ~has_iron & muc_stfr_i_index & muc_crp_low,
+        base & ~has_iron & (~muc_stfr_l_index & ~muc_d_ferritin) & muc_crp_high,
+        base & ~has_iron & muc_stfr_l_index & muc_crp_high,
     ]
-    labels = ["IDA", "IDA/ACD", "ACD"]
+    labels = ["IDA", "ACD", "IDA/ACD", "IDA", "ACD", "IDA/ACD"]
+
     df["anemia_class"] = np.select(conditions, labels, default="Unclassified")
-    df = df[df["anemia_class"].isin(labels)]
+
+    classified = df["anemia_class"] != "Unclassified"
+    print(f"  Classified: {classified.sum()}/{len(df)}")
+    with_iron = (classified & has_iron).sum()
+    without_iron = (classified & ~has_iron).sum()
+    print(f"    With iron panel: {with_iron}, Without (sTfR fallback): {without_iron}")
+
+    df = df[classified]
     return df
 
 

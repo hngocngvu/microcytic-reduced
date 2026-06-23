@@ -35,16 +35,17 @@ models_config = {
 
     "XGBoost": {
         "model": make_pipeline(XGBClassifier(eval_metric='logloss', random_state=42)),
-        
+
         "params": {
             "clf__estimator__n_estimators": [100, 200],
             "clf__estimator__learning_rate": [0.05, 0.1],
-            "clf__estimator__max_depth": [3, 5]
+            "clf__estimator__max_depth": [3, 5],
+            "clf__estimator__scale_pos_weight": [1, 3, 6]
         }
     },
 
     "LightGBM": {
-        "model": make_pipeline(LGBMClassifier(random_state=42, verbose=-1)),
+        "model": make_pipeline(LGBMClassifier(random_state=42, verbose=-1, is_unbalanced=True)),
 
         "params": {
             "clf__estimator__n_estimators": [100, 200],
@@ -54,7 +55,7 @@ models_config = {
     },
 
     "CatBoost": {
-        "model": make_pipeline(CatBoostClassifier(random_state=42, verbose=0)),
+        "model": make_pipeline(CatBoostClassifier(random_state=42, verbose=0, auto_class_weights='Balanced')),
 
         "params": {
             "clf__estimator__iterations": [100, 200],
