@@ -198,15 +198,6 @@ def download_xpt(name, cycle):
 
 
 def add_stfr_index(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Compute sTfR Index = sTfR (mg/L) / log10(ferritin (ng/mL)).
-
-    Thomas & Thomas index — widely used to distinguish IDA from ACD:
-      - sTfR Index > 2  → suggests IDA (or IDA component in combined)
-      - sTfR Index ≤ 2  → suggests ACD without true iron deficiency
-
-    Requires both 'stfr' and 'ferritin' columns to be present and > 0.
-    """
     if "stfr" not in df.columns or "ferritin" not in df.columns:
         print("  [skip] sTfR Index: missing stfr or ferritin column")
         return df
@@ -243,7 +234,7 @@ def add_anemia_labels(df: pd.DataFrame) -> pd.DataFrame:
     muc_stfr_l_index = df["stfr_index"] >= 2
     muc_stfr_i_index = df["stfr_index"] >= 3.2
 
-    if "tsat" in df.columns:
+    if "tsat" and "ferritin" in df.columns:
         has_iron = df["tsat"].notna() & df["ferritin"].notna()
     else:
         has_iron = pd.Series(False, index=df.index)
@@ -253,7 +244,7 @@ def add_anemia_labels(df: pd.DataFrame) -> pd.DataFrame:
     conditions = [
         # Co du chi so sat (serum_iron, tibc, tsat, ferritin)
         base & has_iron & muc_crp_low & ((muc_tsat & muc_d_ferritin) | muc_stfr_i_index),
-        base & has_iron & muc_crp_high & muc_tsat & muc_u_ferritin,
+        base & has_iron & muc_crp_high & ((muc_tsat & muc_u_ferritin) | (~ muc_stfr_l_index & ~muc_d_ferritin)) ,
         base & has_iron & muc_crp_high & ((muc_tsat & muc_l_ferritin) | muc_stfr_l_index),
 
         # Khong co chi so sat — fallback dung stfr_index
