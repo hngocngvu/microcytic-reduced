@@ -3,7 +3,7 @@ from iterstrat.ml_stratifiers import MultilabelStratifiedShuffleSplit
 
 
 if __name__ == "__main__":
-    df= pd.read_csv("data/concat.csv")
+    df= pd.read_csv("data/concat_cbc.csv")
     print(df.head())
 
     X = df.drop(columns=["ACD", "IDA"])

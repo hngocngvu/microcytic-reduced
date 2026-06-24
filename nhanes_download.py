@@ -20,10 +20,34 @@ import numpy as np
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "nhanes_data")
 OUTPUT_CSV = os.path.join(
     DATA_DIR,
-    "nhanes_microcytic_anemia_2013_2018.csv"
+    "data.csv"
 )
 
 CYCLES = {
+    "F": {
+        "year": "2009",
+        "files": {
+            "demo": "DEMO_F.xpt",
+            "cbc": "CBC_F.xpt",
+            "ferritin": "FERTIN_F.xpt",
+            "iron": "FETIB_F.xpt",
+            "crp": "HSCRP_F.xpt",
+            "stfr": "TFR_F.xpt",
+        }
+    },
+
+    "G": {
+        "year": "2011",
+        "files": {
+            "demo": "DEMO_G.xpt",
+            "cbc": "CBC_G.xpt",
+            "ferritin": "FERTIN_G.xpt",
+            "iron": "FETIB_G.xpt",
+            "crp": "HSCRP_G.xpt",
+            "stfr": "TFR_G.xpt",
+        }
+    },
+
     "H": {
         "year": "2013",
         "files": {
@@ -230,29 +254,28 @@ def add_anemia_labels(df: pd.DataFrame) -> pd.DataFrame:
     muc_u_ferritin = df["ferritin"] >= 100
     muc_l_ferritin = df["ferritin"] < 100
     muc_crp_high = df["hscrp"] > 10
-    muc_crp_low = df["hscrp"] <= 10
-    muc_stfr_l_index = df["stfr_index"] >= 2
-    muc_stfr_i_index = df["stfr_index"] >= 3.2
+    #muc_stfr_l_index = df["stfr_index"] >= 2
+    #muc_stfr_i_index = df["stfr_index"] >= 3.2
 
     if "tsat" in df.columns and "ferritin" in df.columns:
         has_iron = df["tsat"].notna() & df["ferritin"].notna()
     else:
         has_iron = pd.Series(False, index=df.index)
 
-    muc_tsat = df["tsat"] < 20 if "tsat" in df.columns else pd.Series(False, index=df.index)
+    muc_tsat = df["tsat"] < 16 if "tsat" in df.columns else pd.Series(False, index=df.index)
 
     conditions = [
         # Co du chi so sat (serum_iron, tibc, tsat, ferritin)
-        base & has_iron & muc_crp_low & ((muc_tsat & muc_d_ferritin) | muc_stfr_i_index),
-        base & has_iron & muc_crp_high & ((muc_tsat & muc_u_ferritin) | (~ muc_stfr_l_index & ~muc_d_ferritin)) ,
-        base & has_iron & muc_crp_high & ((muc_tsat & muc_l_ferritin) | muc_stfr_l_index),
+        base & has_iron & (~ muc_crp_high) & (muc_tsat & muc_d_ferritin), #| muc_stfr_i_index),
+        base & has_iron & muc_crp_high & (muc_tsat & muc_u_ferritin), #| (~ muc_stfr_l_index & ~muc_d_ferritin)) ,
+        base & has_iron & muc_crp_high & (muc_tsat & muc_l_ferritin) #| muc_stfr_l_index),
 
         # Khong co chi so sat — fallback dung stfr_index
-        base & ~has_iron & muc_stfr_i_index & muc_crp_low,
-        base & ~has_iron & (~muc_stfr_l_index & ~muc_d_ferritin) & muc_crp_high,
-        base & ~has_iron & muc_stfr_l_index & muc_crp_high,
+        #base & ~has_iron & muc_stfr_i_index & muc_crp_low,
+        #base & ~has_iron & (~muc_stfr_l_index & ~muc_d_ferritin) & muc_crp_high,
+        #base & ~has_iron & muc_stfr_l_index & muc_crp_high,
     ]
-    labels = ["IDA", "ACD", "IDA/ACD", "IDA", "ACD", "IDA/ACD"]
+    labels = ["IDA", "ACD", "IDA/ACD"] #"IDA", "ACD", "IDA/ACD"]
 
     df["anemia_class"] = np.select(conditions, labels, default="Unclassified")
 

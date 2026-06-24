@@ -13,8 +13,7 @@ import argparse
 from iterstrat.ml_stratifiers import MultilabelStratifiedShuffleSplit
 
 if __name__ == "__main__":
-    # RF, XGBoost, LightGBM, LR, SVM, KNN, NaiveBayes, DT
-
+    # XGBoost, CatBoost, LightGBM 
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--model-name",

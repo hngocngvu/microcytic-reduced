@@ -13,7 +13,7 @@ def clean_concat(df):
 
     df = df.drop_duplicates()
 
-    drop_cols = [c for c in ["SEQN", "age", "cycle"] if c in df.columns]
+    drop_cols = [c for c in ["SEQN", "cycle"] if c in df.columns]
     df = df.drop(columns=drop_cols)
 
     df["stfr_index"] = df["stfr_index"].round(1)
@@ -36,3 +36,6 @@ if __name__ == "__main__":
 
     df_final = df.drop(columns=["anemia_class"])
     df_final.to_csv(os.path.join(BASE_DIR, "data", "concat.csv"), index=False)
+
+    df_final_cbc= df_final.drop(columns= ["ferritin", "hscrp", "stfr", "serum_iron", "tibc", "tsat", "stfr_index"])
+    df_final_cbc.to_csv(os.path.join(BASE_DIR, "data", "concat_cbc.csv"), index=False)
