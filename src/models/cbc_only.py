@@ -102,7 +102,7 @@ def loocv_evaluate(X, y, model_name, pipeline):
 
 
 if __name__ == "__main__":
-    data_path = os.path.join(BASE_DIR, "nhanes_data", "data.csv")
+    data_path = os.path.join(BASE_DIR, "data", "concat_for_eda.csv")
     X, y = load_nhanes_cbc(data_path)
 
     print(f"Dataset: {len(X)} samples")

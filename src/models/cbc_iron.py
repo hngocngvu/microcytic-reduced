@@ -27,7 +27,7 @@ CBC_FEATURES = [
 ]
 
 IRON_FEATURES = [
-    "ferritin", "hscrp", "stfr", "serum_iron", "tibc", "tsat", "stfr_index",
+    "ferritin", "hscrp", "serum_iron", "tibc", "tsat",
 ]
 
 
@@ -230,7 +230,7 @@ def run_incremental(X, y):
 
 
 if __name__ == "__main__":
-    data_path = os.path.join(BASE_DIR, "nhanes_data", "data.csv")
+    data_path = os.path.join(BASE_DIR, "data", "concat_for_eda.csv")
     X, y = load_nhanes(data_path)
 
     print(f"Dataset: {len(X)} samples")
