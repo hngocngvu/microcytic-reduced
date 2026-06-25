@@ -380,6 +380,11 @@ def main():
     print("\n[3/4] Computing derived features...")
     #df = add_stfr_index(df)
 
+    if "tsat" in df.columns and "serum_iron" in df.columns and "tibc" in df.columns:
+        mask = df["tsat"].isna() & df["serum_iron"].notna() & df["tibc"].notna() & (df["tibc"] > 0)
+        df.loc[mask, "tsat"] = (df.loc[mask, "serum_iron"] / df.loc[mask, "tibc"]) * 100
+        print(f"  TSAT recalculated for {mask.sum()} rows where LBDPCT was missing")
+
     print("\n[4/4] Adding anemia classification labels...")
     df = add_anemia_labels(df)
 

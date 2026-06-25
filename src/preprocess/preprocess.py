@@ -35,7 +35,7 @@ if __name__ == "__main__":
         df = pd.get_dummies(df, columns=["gender"], drop_first=True, dtype=int)
 
     df_final = df.drop(columns=["anemia_class"])
-    df_final.to_csv(os.path.join(BASE_DIR, "data", "concat.csv"), index=False)
+    #df_final.to_csv(os.path.join(BASE_DIR, "data", "concat.csv"), index=False)
 
-    df_final_cbc= df_final.drop(columns= ["ferritin", "hscrp", "stfr", "serum_iron", "tibc", "tsat", "stfr_index"])
+    df_final_cbc= df_final.drop(columns= ["ferritin", "hscrp", "stfr", "serum_iron", "tibc", "tsat", "stfr_index", "age"])
     df_final_cbc.to_csv(os.path.join(BASE_DIR, "data", "concat_cbc.csv"), index=False)
