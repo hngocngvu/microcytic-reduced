@@ -32,7 +32,7 @@ CYCLES = {
             "ferritin": "FERTIN_F.xpt",
             "iron": "FETIB_F.xpt",
             "crp": "HSCRP_F.xpt",
-            "stfr": "TFR_F.xpt",
+            #"stfr": "TFR_F.xpt",
         }
     },
 
@@ -44,7 +44,7 @@ CYCLES = {
             "ferritin": "FERTIN_G.xpt",
             "iron": "FETIB_G.xpt",
             "crp": "HSCRP_G.xpt",
-            "stfr": "TFR_G.xpt",
+            #"stfr": "TFR_G.xpt",
         }
     },
 
@@ -56,7 +56,7 @@ CYCLES = {
             "ferritin": "FERTIN_H.xpt",
             "iron": "FETIB_H.xpt",
             "crp": "HSCRP_H.xpt",
-            "stfr": "TFR_H.xpt",
+            #"stfr": "TFR_H.xpt",
         }
     },
 
@@ -68,7 +68,7 @@ CYCLES = {
             "ferritin": "FERTIN_I.xpt",
             "iron": "FETIB_I.xpt",
             "crp": "HSCRP_I.xpt",
-            "stfr": "TFR_I.xpt",
+            #"stfr": "TFR_I.xpt",
         }
     },
 
@@ -80,7 +80,7 @@ CYCLES = {
             "ferritin": "FERTIN_J.xpt",
             "iron": "FETIB_J.xpt",
             "crp": "HSCRP_J.xpt",
-            "stfr": "TFR_J.xpt",
+            #"stfr": "TFR_J.xpt",
         }
     }
 }
@@ -128,14 +128,14 @@ DATASETS = {
         "cols": ["SEQN", "LBXHSCRP"],
     },
 
-    "stfr": {
-        "file": "TFR_{}.xpt",
-        "desc": "sTfR",
-        "cols": [
-            "SEQN",
-            "LBXTFR",
-        ],
-    },
+    # "stfr": {
+    #     "file": "TFR_{}.xpt",
+    #     "desc": "sTfR",
+    #     "cols": [
+    #         "SEQN",
+    #         "LBXTFR",
+    #     ],
+    # },
 }
 
 RENAME = {
@@ -155,7 +155,7 @@ RENAME = {
     "LBDTIB": "tibc",
     "LBDPCT": "tsat",
     "LBXHSCRP": "hscrp",
-    "LBXTFR":   "stfr",        # sTfR in mg/L
+    #"LBXTFR":   "stfr",        # sTfR in mg/L
 }
 
 GENDER_MAP = {1: "Male", 2: "Female"}
@@ -221,22 +221,22 @@ def download_xpt(name, cycle):
     return df[available]
 
 
-def add_stfr_index(df: pd.DataFrame) -> pd.DataFrame:
-    if "stfr" not in df.columns or "ferritin" not in df.columns:
-        print("  [skip] sTfR Index: missing stfr or ferritin column")
-        return df
+# def add_stfr_index(df: pd.DataFrame) -> pd.DataFrame:
+#     if "stfr" not in df.columns or "ferritin" not in df.columns:
+#         print("  [skip] sTfR Index: missing stfr or ferritin column")
+#         return df
 
-    valid = (df["stfr"] > 0) & (df["ferritin"] > 0)
-    df["stfr_index"] = np.where(
-        valid,
-        df["stfr"] / np.log10(df["ferritin"].where(valid, np.nan)),
-        np.nan,
-    )
-    n_valid = valid.sum()
-    n_total = len(df)
-    print(f"  sTfR Index computed for {n_valid}/{n_total} rows "
-          f"({n_valid/n_total*100:.1f}%); NaN for zero/missing values.")
-    return df
+#     valid = (df["stfr"] > 0) & (df["ferritin"] > 0)
+#     df["stfr_index"] = np.where(
+#         valid,
+#         df["stfr"] / np.log10(df["ferritin"].where(valid, np.nan)),
+#         np.nan,
+#     )
+#     n_valid = valid.sum()
+#     n_total = len(df)
+#     print(f"  sTfR Index computed for {n_valid}/{n_total} rows "
+#           f"({n_valid/n_total*100:.1f}%); NaN for zero/missing values.")
+#     return df
 
 
 def add_anemia_labels(df: pd.DataFrame) -> pd.DataFrame:
@@ -329,7 +329,7 @@ def main():
                 how="inner"
             )
 
-        for name in ["iron", "stfr"]:
+        for name in ["iron"]:#, "stfr"]:
             if name in frames:
                 df_cycle = df_cycle.merge(
                     frames[name],
@@ -363,7 +363,6 @@ def main():
         "mcv",
         "ferritin",
         "hscrp",
-        "stfr",
     ]
 
     df = df.dropna(subset=core_labs)
@@ -373,13 +372,13 @@ def main():
         f"{len(df)} (dropped {complete_before-len(df)})"
     )
 
-    for col in ["stfr", "serum_iron", "tibc", "tsat"]:
+    for col in ["serum_iron", "tibc", "tsat"]:
         if col in df.columns:
             n = df[col].notna().sum()
             print(f"  Rows with {col}: {n}/{len(df)} ({n/len(df)*100:.1f}%)")
 
     print("\n[3/4] Computing derived features...")
-    df = add_stfr_index(df)
+    #df = add_stfr_index(df)
 
     print("\n[4/4] Adding anemia classification labels...")
     df = add_anemia_labels(df)
