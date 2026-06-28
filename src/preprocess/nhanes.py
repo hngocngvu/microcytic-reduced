@@ -25,6 +25,7 @@ def load_nhanes_for_validation(nhanes_path, concat_feature_columns):
     })
 
     df = df.rename(columns=NHANES_TO_CONCAT)
+    df["Hb"] = df["Hb"] * 10
     df["Giới_nữ"] = (df["gender"].str.lower() == "female")
 
     X = pd.DataFrame(index=df.index)
